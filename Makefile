@@ -31,33 +31,43 @@ C_INC += $(wildcard util/*.h)
 C_INC += $(wildcard hits/*.h)
 C_INC += $(wildcard lib/lux/inc/*.h)
 
-OBJECTS = $(patsubst %.c,%.o,$(C_SRC))
-OBJECTS += $(patsubst %.cpp,%.o,$(CPP_SRC))
+OBJECTS = $(patsubst %.c,.obj/%.o,$(C_SRC))
+OBJECTS += $(patsubst %.cpp,.obj/%.o,$(CPP_SRC))
 DEPS = $(OBJECTS:.o=.d)
 
 INC  = -I. -Ilib/lux/inc -Ilib -L/usr/local/lib -L/usr/lib 
 LIB  = -lm -lSDL -lSDL_ttf -lSDL_gfx -lpthread -lportaudio -lvamp-hostsdk -lportmidi #-lporttime
 
 # Assembler, compiler, and linker flags
-CXXFLAGS  = -g -O3 $(INC) -Wall -Wextra -Wno-missing-field-initializers
-CFLAGS = $(CXXFLAGS) -std=c99
-LFLAGS  = $(CXXFLAGS)
+OPTFLAGS	= -g -O3 -Wall -Wextra -Wno-missing-field-initializers -Wno-missing-field-initializers -Wno-unused-parameter
+CXXFLAGS  = $(OPTFLAGS) $(INC)  -std=gnu++14 -Wno-c++11-narrowing
+CFLAGS    = $(OPTFLAGS) $(INC) -std=gnu11
+LFLAGS    = $(OPTFLAGS) $(INC)
 
 -include $(DEPS)
 %.d : %.c
-	@$(CXX) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
+	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
 %.d : %.cpp
 	@$(CXX) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
+.obj/%.o: %.c
+	$(CC) $(CFLAGS) $< -c -o $@
+.obj/%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $< -c -o $@
+C_SRC_DIRS   = $(addprefix .obj/, $(dir $(C_SRC)))
+CPP_SRC_DIRS = $(addprefix .obj/, $(dir $(CPP_SRC)))
+dirs:
+	mkdir -p  $(C_SRC_DIRS) $(CPP_SRC_DIRS)
 
 # Targets
 .PHONY: all
-all: beat-off
+all: dirs beat-off
 
 .PHONY: clean
 clean:
-	-rm -f $(OBJECTS) $(DEPS) beat-off
+	-rm -f $(OBJECTS) $(DEPS) beat-off 
+	-rm -f -r .obj
 
-beat-off: $(OBJECTS)
+beat-off: dirs $(OBJECTS)
 	$(CXX) $(LFLAGS) -g -o beat-off $(OBJECTS) $(LIB)
 
 

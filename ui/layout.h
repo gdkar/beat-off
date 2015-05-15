@@ -155,18 +155,13 @@ static inline void rect_shift(rect_t * rect, const struct xy * d){
     rect->x += d->x;
     rect->y += d->y;
 }
-
 static inline void rect_origin(rect_t * src, rect_t * dst){
     dst->x = 0;
     dst->y = 0;
     dst->w = src->w;
     dst->h = src->h;
 }
-
-static inline void rect_copy(rect_t * dst, const rect_t * src){
-    memcpy(dst, src, sizeof(rect_t));
-}
-
+static inline void rect_copy(rect_t * dst, const rect_t * src){memcpy(dst, src, sizeof(rect_t));}
 static inline int in_rect(const struct xy * xy, const rect_t * rect, struct xy * offset){
     if((xy->x >= rect->x) && (xy->x < rect->x + rect->w) && \
        (xy->y >= rect->y) && (xy->y < rect->y + rect->h)){
@@ -178,19 +173,16 @@ static inline int in_rect(const struct xy * xy, const rect_t * rect, struct xy *
     }
     return 0;
 }
-
 static inline struct xy xy_add(struct xy a, struct xy b){
     return (struct xy) {
         .x = a.x + b.x,
         .y = a.y + b.y
     };
 }
-
 static inline struct xy xy_sub(struct xy a, struct xy b){
     return (struct xy) {
         .x = a.x - b.x,
         .y = a.y - b.y
     };
 }
-
 #endif

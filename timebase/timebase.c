@@ -9,8 +9,8 @@
 
 #define NUDGE 25
 
-int stat_fps = 0;
-int stat_ops = 0;
+double stat_fps = 0;
+double stat_ops = 0;
 
 static double freq_mb_per_ms;
 static long pt_ms;
@@ -18,13 +18,12 @@ static long pt_mb;
 
 static SDL_mutex* updating;
 
-static enum __attribute__((unused)){
+static enum {
     MANUAL,
     AUTOMATIC,
-} timebase_state;
+} timebase_state __attribute__((unused));
 
-void timebase_init()
-{
+void timebase_init(){
     updating = SDL_CreateMutex();
     if(!updating) FAIL("Unable to create mutex: %s\n", SDL_GetError());
 
@@ -32,24 +31,13 @@ void timebase_init()
     pt_mb = 0;
     freq_mb_per_ms = 140. / 60000;
 }
+void timebase_del(){SDL_DestroyMutex(updating);}
+void timebase_update(chunk_pt chunk){PARAM_UNUSED (chunk);}
 
-void timebase_del()
-{
-    SDL_DestroyMutex(updating);
-}
-
-void timebase_update(chunk_pt chunk)
-{
-  PARAM_UNUSED (chunk);
-}
-
-static long get_cur_mb(long cur_ms)
-{
+static long get_cur_mb(long cur_ms){
     return pt_mb + (long)((double)(cur_ms - pt_ms) * freq_mb_per_ms);
 }
-
-void timebase_tap()
-{
+void timebase_tap(){
     long cur_ms = SDL_GetTicks();
 
     long cur_mb = get_cur_mb(cur_ms);
@@ -68,28 +56,17 @@ void timebase_tap()
 
     if(SDL_UnlockMutex(updating)) FAIL("Unable to unlock mutex: %s\n", SDL_GetError());
 }
-
-long timebase_get()
-{
+long timebase_get(){
     long cur_ms = SDL_GetTicks();
     static long last_result = 0;
-
     if(SDL_LockMutex(updating)) FAIL("Unable to lock mutex: %s\n", SDL_GetError());
     long result = get_cur_mb(cur_ms);
     if(SDL_UnlockMutex(updating)) FAIL("Unable to unlock mutex: %s\n", SDL_GetError());
-
-    if((result % 1000) < (last_result % 1000)){
-        beat_lines[0] |= 4;
-    }
-
+    if((result % 1000) < (last_result % 1000)){beat_lines[0] |= 4;}
     last_result = result;
-
     return result - NUDGE;
 }
 
-float timebase_get_bpm()
-{
-    return freq_mb_per_ms * 60000;
-}
+float timebase_get_bpm(){return freq_mb_per_ms * 60000;}
 
 // (mb/ms) * (1000 b / mb) * (s / 1000 ms) * (60 m /s) = 60 (mb / ms) / bpm

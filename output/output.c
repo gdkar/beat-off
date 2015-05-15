@@ -24,8 +24,7 @@ color_t** output_buffers = 0;
 
 static SDL_Thread* output_thread;
 
-static int output_run(void* args)
-{
+static int output_run(void* args){
     PARAM_UNUSED args;
     struct lux_frame lf;
     char r;
@@ -43,11 +42,8 @@ static int output_run(void* args)
         need_delay = 1;
         for(int i=0; i<n_output_strips; i++){
             if(output_strips[i].bus < 0) continue;
-
             need_delay = 0;
-
             output_to_buffer(&output_strips[i], output_buffers[i]);
-
             int j = 0;
             float energy = 0.;
             float scalar = 1.0;
@@ -57,9 +53,7 @@ static int output_run(void* args)
                 energy += output_buffers[i][k].b;
             }
             scalar = output_strips[i].length * 2.2 / energy * 255.;
-            if(scalar > 255.)
-                scalar = 255.;
-
+            if(scalar > 255.) scalar = 255.;
             for(int k = 0; k < output_strips[i].length; k++){
                 lf.data.carray.data[j++] = output_buffers[i][k].r * scalar;
                 lf.data.carray.data[j++] = output_buffers[i][k].g * scalar;
@@ -68,12 +62,10 @@ static int output_run(void* args)
             lf.data.carray.cmd = CMD_FRAME; j++;
             lf.destination = output_strips[i].id;
             lf.length = j;
-
-            if((r = lux_tx_packet(&lf)))
-                printf("failed cmd: %d\n", r);
+            if((r = lux_tx_packet(&lf))) printf("failed cmd: %d\n", r);
 
         }
-        stat_ops = c++;
+        stat_ops = (double)c++;
         SDL_Delay(1);
         if(need_delay){
             //printf("delaying output\n");
@@ -81,24 +73,20 @@ static int output_run(void* args)
         }
         if(c % 100 == 0){
             int t = SDL_GetTicks();
-            stat_ops = c;
+            stat_ops = (double)c;
             last_tick = t;
-            printf("output %d - %d\n", c, SDL_GetTicks());
+            printf("output %d - %d\n", c, t);
         }
     }
     return 0;
 }
-
 void output_start(){
     output_buffers = malloc(sizeof(color_t*) * n_output_strips);
-
     if(!output_buffers) FAIL("Could not allocate output buffer array");
-
     for(int i=0; i<n_output_strips; i++){
         output_buffers[i] = malloc(sizeof(color_t) * output_strips[i].length);
         if(!output_buffers[i]) FAIL("Could not allocate output buffer");
     }
-
     if(serial_init()){
         struct lux_frame cmd;
         struct lux_frame resp;
@@ -142,9 +130,7 @@ void output_start(){
         if(!output_thread) FAIL("Could not create output thread: %s\n",SDL_GetError());
     }else{
         printf("No serial initialized\n");
-        for(int i = 0; i < n_output_strips; i++){
-            output_strips[i].bus = -1;
-        }
+        for(int i = 0; i < n_output_strips; i++){output_strips[i].bus = -1;}
     }
 }
 

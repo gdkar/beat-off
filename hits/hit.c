@@ -24,8 +24,6 @@ int n_hits = N_HITS;
 int n_active_hits = 0;
 struct active_hit active_hits[N_MAX_ACTIVE_HITS];
 
-
-
 #define N_HIT_SLOTS 8 //FIXME
 
 struct active_hit preview_active_hits[N_HIT_SLOTS];
@@ -42,10 +40,8 @@ enum adsr_state {
     ADSR_RELEASE,
     ADSR_DONE,
 };
-
 color_t render_composite_hits(color_t base, float x, float y) {
     color_t result = base;
-
     for(int i=0; i < N_MAX_ACTIVE_HITS; i++) {
         if(!active_hits[i].hit || !active_hits[i].state) continue;
         color_t c = (active_hits[i].hit->render)(&active_hits[i], x, y);
@@ -54,13 +50,10 @@ color_t render_composite_hits(color_t base, float x, float y) {
         result.g = result.g * (1 - c.a) + c.g * c.a;
         result.b = result.b * (1 - c.a) + c.b * c.a;
     }
-
     return result;
 }
-
 color_t render_composite_slot_hits(slot_t * slot, float x, float y) {
     color_t result = {0, 0, 0, 1.0};
-
     for(int i=0; i < N_MAX_ACTIVE_HITS; i++) {
         if(!active_hits[i].hit || !active_hits[i].state) continue;
         if(active_hits[i].slot != slot) continue;
@@ -73,14 +66,11 @@ color_t render_composite_slot_hits(slot_t * slot, float x, float y) {
 
     return result;
 }
-
 static struct active_hit * alloc_hit(hit_t * hit){
     struct active_hit * ah = 0;
-
     if(n_active_hits == N_MAX_ACTIVE_HITS){
         ah = &active_hits[N_MAX_ACTIVE_HITS-1];
         ah->hit->stop(ah);
-
         if(n_active_hits >= N_MAX_ACTIVE_HITS){
             printf("Failed to dealloc hit");
             return 0;
@@ -106,15 +96,12 @@ static struct active_hit * alloc_hit(hit_t * hit){
 
 static void free_hit(struct active_hit * active_hit){
     if(!active_hit || !active_hit->hit) return;
-
     free(active_hit->param_values);
     active_hit->param_values = 0;
     memset(active_hit, 0, sizeof(struct active_hit));
-
     active_hit->hit = 0;
     n_active_hits--;
 }
-
 // ----- Hit: Full -----
 //
 enum hit_full_param_names {
@@ -126,7 +113,6 @@ enum hit_full_param_names {
 
     N_FULL_PARAMS
 };
-
 parameter_t hit_full_params[] = {
     [FULL_COLOR] = {
         .name = "Color",
@@ -149,7 +135,6 @@ parameter_t hit_full_params[] = {
         .default_val = 0.5,
     },
 };
-
 struct hit_full_state {
     color_t color;
     enum adsr_state adsr;
@@ -157,7 +142,6 @@ struct hit_full_state {
     mbeat_t last_t;
     float base_alpha;
 };
-
 struct active_hit * hit_full_start(slot_t * slot) {
     if(!slot->hit) return 0;
 
@@ -247,14 +231,12 @@ int hit_full_event(struct active_hit * active_hit, enum hit_event event, float e
     }
     return 0;
 }
-
 void hit_full_prevclick(slot_t * slot, float x, float y){
   PARAM_UNUSED slot;
   PARAM_UNUSED x;
   PARAM_UNUSED y;
 
 }
-
 color_t hit_full_pixel(struct active_hit * active_hit, float x, float y) {
     PARAM_UNUSED x;
     PARAM_UNUSED y;
@@ -263,7 +245,6 @@ color_t hit_full_pixel(struct active_hit * active_hit, float x, float y) {
     color.a = state->base_alpha * state->x;
     return color;
 }
-
 hit_t hit_full = {
     .render = &hit_full_pixel,
     .start = &hit_full_start,
@@ -286,7 +267,6 @@ enum hit_pulse_param_names {
 
     N_PULSE_PARAMS
 };
-
 parameter_t hit_pulse_params[] = {
     [PULSE_COLOR] = {
         .name = "Color",
@@ -348,7 +328,6 @@ void hit_pulse_stop(struct active_hit * active_hit){
     active_hit->state = 0;
     free_hit(active_hit);
 }
-
 int hit_pulse_update(struct active_hit * active_hit, mbeat_t abs_t){
     struct hit_pulse_state * state = active_hit->state;
     if(state->start_t < 0)
@@ -359,7 +338,6 @@ int hit_pulse_update(struct active_hit * active_hit, mbeat_t abs_t){
     }
     return 0;
 }
-
 int hit_pulse_event(struct active_hit * active_hit, enum hit_event event, float event_data){
     struct hit_pulse_state * state = active_hit->state;
     switch(event){
@@ -388,15 +366,12 @@ color_t hit_pulse_pixel(struct active_hit * active_hit, float x, float y) {
     if((x == 0.) && (y == 0.)){
         a = 0;
     }else{
-        //a = (SIN(active_hit->param_values[PULSE_ANGLE]) * y + COS(active_hit->param_values[PULSE_ANGLE]) * x) / (x * x + y * y);
         a = (SIN(active_hit->param_values[PULSE_ANGLE]) * y + COS(active_hit->param_values[PULSE_ANGLE]) * x); // / (x * x + y * y);
     }
     z = a - state->x;
     color.a = state->base_alpha * (fabs(z) < active_hit->param_values[PULSE_WIDTH] ? COS(z * M_PI / (2 * active_hit->param_values[PULSE_WIDTH])) : 0.);
     return color;
 }
-
-
 hit_t hit_pulse = {
     .render = &hit_pulse_pixel,
     .start = &hit_pulse_start,

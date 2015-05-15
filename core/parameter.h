@@ -37,8 +37,7 @@ param_output_t * param_state_output(param_state_t * state);  // Returns NULL if 
 
 typedef void (*param_val_to_str_fn_pt)(float val, char* buf, int n);
 
-typedef struct parameter
-{
+typedef struct parameter{
     char* name;
     param_val_to_str_fn_pt val_to_str;
     float default_val;

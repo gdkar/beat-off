@@ -3,8 +3,8 @@
 
 #include "core/audio.h"
 
-extern int stat_fps;
-extern int stat_ops;
+extern double stat_fps;
+extern double stat_ops;
 
 void timebase_init();
 void timebase_del();

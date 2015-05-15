@@ -1,5 +1,5 @@
-CC = gcc
-CXX = g++
+CC = clang 
+CXX = clang++
 
 # Files to include
 C_SRC  = $(wildcard core/*.c)
@@ -17,7 +17,6 @@ C_SRC += $(wildcard util/*.c)
 C_SRC += $(wildcard lib/lux/src/*.c)
 CPP_SRC += $(wildcard filters/*.cpp)
 
-C_INC  = $(wildcard core/*.h)
 C_INC += $(wildcard filters/*.h)
 C_INC += $(wildcard lib/*.h)
 C_INC += $(wildcard midi/*.h)
@@ -35,7 +34,7 @@ OBJECTS = $(patsubst %.c,.obj/%.o,$(C_SRC))
 OBJECTS += $(patsubst %.cpp,.obj/%.o,$(CPP_SRC))
 DEPS = $(OBJECTS:.o=.d)
 
-INC  = -I. -Ilib/lux/inc -Ilib -L/usr/local/lib -L/usr/lib 
+INC  = -I. -Ilib/lux/inc -Ilib 
 LIB  = -lm -lSDL -lSDL_ttf -lSDL_gfx -lpthread -lportaudio -lvamp-hostsdk -lportmidi #-lporttime
 
 # Assembler, compiler, and linker flags

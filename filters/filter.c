@@ -21,20 +21,14 @@ void filter_diodelpf_agc_update(filter_t * filter, mbeat_t t_msec, double value)
     struct filter_lpf_agc_state * state = filter->state;
 
     state->agc_scale *= state->agc_alpha;
-    if(value > state->lpf_last) 
-        state->lpf_last = value;
-    else 
-        value = state->lpf_last = (state->lpf_alpha * value) + ((1 - state->lpf_alpha) * state->lpf_last);
-
+    if(value > state->lpf_last)  state->lpf_last = value;
+    else                         value = state->lpf_last = (state->lpf_alpha * value) + ((1 - state->lpf_alpha) * state->lpf_last);
     if(value > state->agc_scale) state->agc_scale = value;
-
     param_output_set(&filter->output, value / state->agc_scale);
 }
-
 void filter_lpf_agc_update(filter_t * filter, mbeat_t t_msec, double value){
     PARAM_UNUSED t_msec;
     struct filter_lpf_agc_state * state = filter->state;
-
     state->agc_scale *= state->agc_alpha;
     /*
     if(value > state->lpf_last) 
@@ -42,14 +36,10 @@ void filter_lpf_agc_update(filter_t * filter, mbeat_t t_msec, double value){
     else 
     */
     value = state->lpf_last = (state->lpf_alpha * value) + ((1 - state->lpf_alpha) * state->lpf_last);
-
     if(value > state->agc_scale) state->agc_scale = value;
-
     param_output_set(&filter->output, value / state->agc_scale);
 }
-
-void filter_beat_update(filter_t * filter, mbeat_t t_msec, double value)
-{
+void filter_beat_update(filter_t * filter, mbeat_t t_msec, double value){
     PARAM_UNUSED (filter);
     PARAM_UNUSED (t_msec);
     PARAM_UNUSED (value);
@@ -57,8 +47,6 @@ void filter_beat_update(filter_t * filter, mbeat_t t_msec, double value)
     waveform_add_beatline();
     //printf("Beat: %d\n", t_msec);
 }
-
-
 int n_filters = N_FILTERS;
 filter_t filters[N_FILTERS] = {
     {
@@ -146,20 +134,15 @@ void filters_load(){
         }
     }
 }
-
 void filters_unload(){
     for(int i = 0; i < n_filters; i++){
         vamp_plugin_unload(&filters[i]);
-        if(filters[i].del)
-            filters[i].del(&filters[i]);
+        if(filters[i].del) filters[i].del(&filters[i]);
         graph_remove(&filters[i].graph_state);
     }
 }
-
 void filters_update(chunk_pt chunk){
-    for(int i = 0; i < n_filters; i++){
-        vamp_plugin_update(&filters[i], chunk);
-    }
+    for(int i = 0; i < n_filters; i++){vamp_plugin_update(&filters[i], chunk);}
     n_filtered_chunks++;
 }
 

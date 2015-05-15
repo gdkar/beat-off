@@ -9,15 +9,9 @@ void text_render(SDL_Surface * surface, TTF_Font * font, struct txt * params, co
     SDL_Surface* msg;
     SDL_Color white = {0,0,0};
     rect_t r;
-
-    if(color){
-        msg = TTF_RenderText_Solid(font, text, *color);
-    }else{
-        msg = TTF_RenderText_Solid(font, text, white);
-    }
-    if(!msg)
-        return;
-
+    if(color){msg = TTF_RenderText_Solid(font, text, *color);}
+    else{msg = TTF_RenderText_Solid(font, text, white);}
+    if(!msg) return;
     r.x = params->x;
     r.y = params->y;
     r.w = msg->w;
@@ -26,21 +20,13 @@ void text_render(SDL_Surface * surface, TTF_Font * font, struct txt * params, co
     
     // Extract font/color from params
     switch(params->align){
-        case TXTALIGN_BR:
-            r.y -= r.h;
-        case TXTALIGN_TR:
-            r.x -= r.w;
-            break;
-        case TXTALIGN_CC:
-            r.y -= r.h / 2; // fall through
-        case TXTALIGN_TC:
-            r.x -= r.w / 2;
-            break;
+        case TXTALIGN_BR: r.y -= r.h;
+        case TXTALIGN_TR: r.x -= r.w; break;
+        case TXTALIGN_CC: r.y -= r.h / 2; // fall through
+        case TXTALIGN_TC: r.x -= r.w / 2; break;
         case TXTALIGN_TL:
-        default:
-            break;
+        default: break;
     }
-
     SDL_BlitSurface(msg, 0, surface, &r);
     SDL_FreeSurface(msg);
 }

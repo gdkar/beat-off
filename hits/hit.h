@@ -43,7 +43,6 @@ typedef struct hit {
     parameter_t * parameters;
     char * name;
 } hit_t;
-
 struct active_hit {
     struct hit * hit;
     struct slot * slot;
@@ -52,7 +51,6 @@ struct active_hit {
     float alpha;
     void * state;
 };
-
 color_t render_composite_hits(color_t base, float x, float y);
 color_t render_composite_slot_hits(struct slot * slot, float x, float y);
 

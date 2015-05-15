@@ -62,11 +62,9 @@ static inline void waveform_bin_update(struct waveform_bin * bin, float value){
     memmove(history + 1, history, (WAVEFORM_HISTORY_SIZE -1) * sizeof(float));
     *history = value;
 }
-
 void waveform_add_beatline(){
     beat_lines[0] |= 1;
 }
-
 void waveform_update(chunk_pt chunk){
     const float alpha = 0.98;
 
@@ -106,6 +104,5 @@ void waveform_update(chunk_pt chunk){
     beat_lines[0] = 0;
 }
 
-void waveform_del(){
-}
+void waveform_del(){}
 

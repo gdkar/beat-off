@@ -37,20 +37,15 @@ parameter_t pat_full_params[] = {
     },
 };
 
-pat_state_pt pat_full_init()
-{
+pat_state_pt pat_full_init(){
     color_t * color = malloc(sizeof(color_t));
     *color = (color_t) {.r = 0., .g = 0., .b = 0., .a = 0.};
     return color;
 }
 
-void pat_full_del(pat_state_pt state)
-{
-    free(state);
-}
+void pat_full_del(pat_state_pt state){free(state);}
 
-void pat_full_update(slot_t* slot, long t)
-{
+void pat_full_update(slot_t* slot, long t){
     PARAM_UNUSED t;
     color_t* color = (color_t*)slot->state;
     *color = param_to_color(param_state_get(&slot->param_states[FULL_COLOR]));
@@ -67,8 +62,7 @@ void pat_full_prevclick(slot_t * slot, float x, float y){
 
 }
 
-color_t pat_full_pixel(slot_t* slot, float x, float y)
-{
+color_t pat_full_pixel(slot_t* slot, float x, float y){
     PARAM_UNUSED x;
     PARAM_UNUSED y;
     return *(color_t*)slot->state;
@@ -87,8 +81,7 @@ pattern_t pat_full = {
 
 // --------- Pattern: Wave -----------
 
-typedef struct
-{
+typedef struct{
     color_t color;
     float phase;
     enum osc_type type;
@@ -133,8 +126,7 @@ parameter_t pat_wave_params[N_WAVE_PARAMS] = {
     },
 };
 
-pat_state_pt pat_wave_init()
-{
+pat_state_pt pat_wave_init(){
     pat_wave_state_t * state = malloc(sizeof(pat_wave_state_t));
     state->color = (color_t) {0.0, 0.0, 0.0, 0.0};
     state->phase = 0.0;

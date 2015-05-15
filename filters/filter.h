@@ -8,13 +8,11 @@
 #include <SDL/SDL.h>
 
 struct filter;
-
 typedef void * filter_state_pt;
 typedef void * vamp_plugin_p;
 typedef void (*filter_init_fn_pt)(struct filter * filter);
 typedef void (*filter_update_fn_pt)(struct filter * filter, mbeat_t t_msec, double value);
 typedef void (*filter_del_fn_pt)(struct filter * filter);
-
 typedef struct filter {
     // Input parameters
     int n_params;

@@ -25,11 +25,9 @@ void ui_waveform_render(){
 #define MAX(a, b) ((a > b) ? a : b)
     int h;
     SDL_Color c;
-
     for(int j = 0; j < N_WF_BINS; j++){
         float * history = waveform_bins[j].history;
         c = waveform_bins[j].color;
-
         for(int i = 0; i < layout.waveform.w; i++)
         {
             float x = 0.;

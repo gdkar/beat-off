@@ -8,13 +8,11 @@ struct layout layout = {
     #define CFG(n, type, default) .n = default,
     #include "layout.def"
 };
-
 char* mystrdup(const char* s) {
     char* p = malloc(strlen(s)+1);
     if (p) strcpy(p, s);
     return p;
 }
-
 static int parse_layout(void * user, const char * section, const char * name, const char * value){
     char * sptr;
     struct layout * cfg = (struct layout *) user;
@@ -25,22 +23,16 @@ static int parse_layout(void * user, const char * section, const char * name, co
     #include "layout.def"
     return 0;
 }
-
 int dump_layout(struct layout* cfg, char * filename){
     char * sptr;
     FILE * stream = fopen(filename, "w");
-    if(!stream)
-        return 1;
-
+    if(!stream) return 1;
     #define CFGSECTION(s, d...) fprintf(stream, "[" #s "]\n"); sptr = (char *) &cfg->s; d; fprintf(stream, "\n");
     #define CFG(n, type, default) fprintf(stream, "%s=" type##_FMT "\n", STRINGIFY(n), *((type *) sptr)); sptr += sizeof(type);
     #include "layout.def"
-
     fclose(stream);
-
     return 0;
 }
-
 int load_layout(struct layout* cfg, const char * filename){
     if(ini_parse(filename, parse_layout, cfg) < 0){
         printf("Unable to load layout configuration file: '%s'\n", filename);
@@ -49,11 +41,8 @@ int load_layout(struct layout* cfg, const char * filename){
     printf("Loaded layout configuration file: '%s'\n", filename);
     return 0;
 }
-
 void rect_array_layout(struct rect_array * array_spec, int index, rect_t * rect){
-    if(array_spec->tile != 0){
-        printf("Unsupported tile format: %d\n", array_spec->tile);
-    }
+    if(array_spec->tile != 0){printf("Unsupported tile format: %d\n", array_spec->tile);}
     int index_x = index;
     int index_y = index;
 
@@ -62,7 +51,6 @@ void rect_array_layout(struct rect_array * array_spec, int index, rect_t * rect)
     rect->w = array_spec->w;
     rect->h = array_spec->h;
 }
-
 void rect_array_origin(struct rect_array * array_spec, rect_t * rect){
     rect->x = 0;
     rect->y = 0;

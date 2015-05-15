@@ -62,7 +62,6 @@ void inp_lfo_init(signal_t * signal){
     state->freq = 1.0;
     state->type = OSC_SINE;
 
-
     signal->param_states = malloc(sizeof(param_state_t) * signal->n_params);
     if(!signal->param_states){
         free(signal->state);
@@ -99,19 +98,15 @@ void inp_lfo_update(signal_t * signal, mbeat_t t){
     param_output_set(&signal->output, osc_fn_gen(state->type, state->phase) * signal->param_states[LFO_AMP].value
                                       + (1.0 - signal->param_states[LFO_AMP].value) * signal->param_states[LFO_OFFSET].value);
 }
-
 void inp_lfo_del(signal_t * signal){
     if(!signal->state) return;
-
     param_output_free(&signal->output);
     free(signal->param_states);
     signal->param_states = 0;
     free(signal->state);
     signal->state = 0;
 }
-
-typedef struct
-{
+typedef struct{
     float value;
     mbeat_t last_t;
 } inp_lpf_state_t;
@@ -141,7 +136,6 @@ parameter_t inp_lpf_parameters[N_LPF_PARAMS] = {
         .val_to_str = float_to_string,
     },
 };
-
 void inp_lpf_init(signal_t * signal){
     inp_lpf_state_t * state = signal->state = malloc(sizeof(inp_lpf_state_t));
     if(!signal->state) return;
@@ -179,7 +173,6 @@ void inp_lpf_update(signal_t * signal, mbeat_t t){
 
 void inp_lpf_del(signal_t * signal){
     if(!signal->state) return;
-
     param_output_free(&signal->output);
     free(signal->param_states);
     signal->param_states = 0;
@@ -187,8 +180,7 @@ void inp_lpf_del(signal_t * signal){
     signal->state = 0;
 }
 
-typedef struct
-{
+typedef struct{
     float min;
     float max;
 } inp_agc_state_t;
@@ -245,40 +237,37 @@ void inp_agc_init(signal_t * signal){
 
 void inp_agc_update(signal_t * signal, mbeat_t t){
     PARAM_UNUSED (t);
-    if(!signal->state) return;
-    inp_agc_state_t * state = (inp_agc_state_t *) signal->state;
+    if(signal->state) {
+      inp_agc_state_t * state = (inp_agc_state_t *) signal->state;
 
-    float x = signal->param_states[AGC_INPUT].value;
-    float min = signal->param_states[AGC_MIN].value;
-    float max = signal->param_states[AGC_MAX].value;
-    float a = signal->param_states[AGC_DECAY].value;
-    float y;
+      float x = signal->param_states[AGC_INPUT].value;
+      float min = signal->param_states[AGC_MIN].value;
+      float max = signal->param_states[AGC_MAX].value;
+      float a = signal->param_states[AGC_DECAY].value;
+      float y;
+      if(a < 1e-4){
+          state->max = 1.;
+          state->min = 0.;
+      }else{
+          a = a * 0.01 + 0.99;
+          state->max = MAX(state->max * a, x);
+          state->min = MIN(state->max - (state->max - state->min) * a, x);
+          x = (x - state->min) / (state->max - state->min);
+      }
 
-    if(a < 1e-4){
-        state->max = 1.;
-        state->min = 0.;
-    }else{
-        a = a * 0.01 + 0.99;
-        state->max = MAX(state->max * a, x);
-        state->min = MIN(state->max - (state->max - state->min) * a, x);
-        x = (x - state->min) / (state->max - state->min);
-    }
-
-    if(min < max){
-        y = x * (max - min) + min;
-    }else{
-        y = (1. - x) * (min - max) + max;
-    }
-    param_output_set(&signal->output, y);
+      y = (min<max)? (x * (max - min) + min):((1. - x) * (min - max) + max);
+      param_output_set(&signal->output, y);
+    } 
 }
 
 void inp_agc_del(signal_t * signal){
-    if(!signal->state) return;
-    param_output_free(&signal->output);
-    free(signal->param_states);
-    signal->param_states = 0;
-    free(signal->state);
-    signal->state = 0; 
+    if(signal->state) {
+      param_output_free(&signal->output);
+      free(signal->param_states);
+      signal->param_states = 0;
+      free(signal->state);
+      signal->state = 0; 
+    }
 }
 
 int n_signals = N_SIGNALS;
@@ -371,25 +360,17 @@ signal_t signals[N_SIGNALS] = {
 };
 
 void update_signals(mbeat_t t) {
-    for(int i=0; i < n_signals; i++)
-    {
-        signals[i].update(&signals[i], t);
-    }
+    for(int i=0; i < n_signals; i++){signals[i].update(&signals[i], t);}
 }
-
-
 void signal_start(){
     for(int i = 0; i < n_signals; i++){
         signals[i].init(&signals[i]);
-
         graph_create_signal(&signals[i].graph_state);
     }
 }
-
 void signal_stop(){
     for(int i = 0; i < n_signals; i++){
         signals[i].del(&signals[i]);
-
         graph_remove(&signals[i].graph_state);
     }
 }

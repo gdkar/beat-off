@@ -71,15 +71,14 @@ int main()
         ui_render();
 
         stat_fps = 1000. / SDL_framerateDelay(&fps_manager);
+        fprintf(stderr,"apparent FPS is %F\n",stat_fps);
     }
 
     signal_stop();
     midi_stop();
     audio_stop();
     output_stop();
-
     filters_unload();
-
     SDL_DestroyMutex(patterns_updating);
     SDL_DestroyMutex(hits_updating);
 

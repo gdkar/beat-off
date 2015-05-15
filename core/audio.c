@@ -50,8 +50,7 @@ static int audio_run(void*  args)
     err = Pa_StartStream(stream);
     if(err != paNoError) FAIL("Could not open audio input stream\n");
 
-    while(audio_running)
-    {
+    while(audio_running){
         err = Pa_ReadStream(stream, chunk, FRAMES_PER_BUFFER );
         if(err != paNoError) FAIL("Could not read audio chunk\n");
 
@@ -68,8 +67,7 @@ static int audio_run(void*  args)
 }
 
 
-void audio_start()
-{
+void audio_start(){
     timebase_init();
     waveform_init();
 
@@ -79,8 +77,7 @@ void audio_start()
     if(!audio_thread) FAIL("Could not create output thread: %s\n",SDL_GetError());
 }
 
-void audio_stop()
-{
+void audio_stop(){
     audio_running = 0;
 
     SDL_WaitThread(audio_thread, 0);

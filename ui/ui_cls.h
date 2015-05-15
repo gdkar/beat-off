@@ -1,52 +1,53 @@
 #ifndef UI_UI_CLS_H
 #define UI_UI_CLS_H
 #include "core/cls.h"
-typedef struct ui_cls ui_cls_t;
-typedef struct ui_object ui_object_t;
-typedef struct ui_evt ui_evt_t;
-typedef int (*ui_object_start_fn_pt) (ui_object_t *self);
-typedef int (*ui_object_stop_fn_pt)  (ui_object_t *self);
-typedef int (*ui_object_event_fn_pt) (ui_object_t *self, ui_evt_t *evt );
-typedef int (*ui_object_render_fn_pt)(ui_object_t *self, ui_evt_t *evt );
+typedef struct UiClass UiClass;
+typedef struct UiObject UiObject;
+typedef struct UiEvent UiEvent;
+typedef struct UiEventType UiEventType;
+typedef int (*ui_object_start_fn_pt) (UiObject *self);
+typedef int (*ui_object_stop_fn_pt)  (UiObject *self);
+typedef int (*ui_object_event_fn_pt) (UiObject *self, UiEvent *evt );
+typedef int (*ui_object_render_fn_pt)(UiObject *self, UiEvent *evt );
 
-int ui_object_start (ui_object_t *self);
-int ui_object_stop  (ui_object_t *self);
-int ui_object_event (ui_object_t *self, ui_evt_t *evt);
-int ui_object_render(ui_object_t *self, ui_evt_t *evt);
+int ui_object_start (UiObject *self);
+int ui_object_stop  (UiObject *self);
+int ui_object_event (UiObject *self, UiEvent *evt);
+int ui_object_render(UiObject *self, UiEvent *evt);
 
-typedef struct ui_evt_type{
+typedef struct UiEventType{
   const char            *name;
-  const char            *priv_fmt; /* argument format for use with sscanf */
-}ui_evt_type_t;
+  const char            *format; /* argument format for use with sscanf */
+}UiEventType;
 
-struct ui_evt{
-  struct ui_evt_type    *type;
+struct UiEvent{
+  UiEventType           *type;
   const char             data[];   /* argument data for use with sscanf */
 };
 
-typedef struct ui_cls_funcs {
-  struct cls             super;
+typedef struct UiClassFns{
+  Class                  super;
   ui_object_start_fn_pt  start;
   ui_object_stop_fn_pt   stop;
   ui_object_event_fn_pt  event;
   ui_object_render_fn_pt render;
-}ui_cls_funcs_t;
+}UiClassFns;
 
-struct ui_cls{
+struct UiClass{
   const char                *name;
-  cls_t                     *next;
-  const struct ui_cls_funcs *funcs;
+  Class                     *next;
+  const UiClassFns          *fns;
   size_t                     obj_priv_size;
-  object_priv_t              obj_priv_default;
+  ObjectPriv                 obj_priv_default;
   size_t                     cls_priv_size;
-  cls_priv_t                 cls_priv;
+  ClassPriv                  cls_priv;
 };
 
-struct ui_object {
-  const struct ui_cls       *cls;
-  const struct ui_cls_funcs *funcs;
+struct UiObject{
+  const UiClass             *cls;
+  const UiClassFns          *fns;
   char                      *name;
   size_t                     priv_size;
-  object_priv_t              priv;
+  ObjectPriv                 priv;
 };
 #endif

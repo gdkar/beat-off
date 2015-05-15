@@ -1,4 +1,4 @@
-CC = clang 
+CC = clang
 CXX = clang++
 
 # Files to include
@@ -29,6 +29,7 @@ C_INC += $(wildcard ui/*.h)
 C_INC += $(wildcard util/*.h)
 C_INC += $(wildcard hits/*.h)
 C_INC += $(wildcard lib/lux/inc/*.h)
+CPP_INC += $(wildcard core/*.hpp)
 
 OBJECTS = $(patsubst %.c,.obj/%.o,$(C_SRC))
 OBJECTS += $(patsubst %.cpp,.obj/%.o,$(CPP_SRC))
@@ -52,6 +53,9 @@ LFLAGS    = $(OPTFLAGS) $(INC)
 	$(CC) $(CFLAGS) $< -c -o $@
 .obj/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
+.obj/%.o: %.hpp
+	$(CXX) $(CXXFLAGS) $< -c -o $@
+
 C_SRC_DIRS   = $(addprefix .obj/, $(dir $(C_SRC)))
 CPP_SRC_DIRS = $(addprefix .obj/, $(dir $(CPP_SRC)))
 dirs:

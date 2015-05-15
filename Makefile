@@ -56,7 +56,7 @@ LFLAGS    = $(OPTFLAGS) $(INC)
 C_SRC_DIRS   = $(addprefix .obj/, $(dir $(C_SRC)))
 CPP_SRC_DIRS = $(addprefix .obj/, $(dir $(CPP_SRC)))
 dirs:
-	mkdir -p  $(C_SRC_DIRS) $(CPP_SRC_DIRS)
+	mkdir -p  $(C_SRC_DIRS) $(CPP_SRC_DIRS) bin
 
 # Targets
 .PHONY: all
@@ -65,10 +65,10 @@ all: dirs beat-off
 .PHONY: clean
 clean:
 	-rm -f $(OBJECTS) $(DEPS) beat-off 
-	-rm -f -r .obj
+	-rm -f -r .obj bin
 
 beat-off: dirs $(OBJECTS)
-	$(CXX) $(LFLAGS) -g -o beat-off $(OBJECTS) $(LIB)
+	$(CXX) $(LFLAGS) -g -o bin/beat-off $(OBJECTS) $(LIB)
 
 
 #%.o: %.c $(C_INC)

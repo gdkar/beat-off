@@ -1,6 +1,8 @@
 *.o
 *.d
 beat-off
+/bin
+/.obj
 *.swp
 *.swm
 *.swn

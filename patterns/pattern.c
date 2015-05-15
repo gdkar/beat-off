@@ -50,6 +50,7 @@ void pat_full_del(pat_state_pt state)
 
 void pat_full_update(slot_t* slot, long t)
 {
+    (void)t;
     color_t* color = (color_t*)slot->state;
     *color = param_to_color(param_state_get(&slot->param_states[FULL_COLOR]));
     float v = param_state_get(&slot->param_states[FULL_VALUE]);
@@ -59,11 +60,16 @@ void pat_full_update(slot_t* slot, long t)
 }
 
 void pat_full_prevclick(slot_t * slot, float x, float y){
+  (void)slot;
+  (void)x;
+  (void)y;
 
 }
 
 color_t pat_full_pixel(slot_t* slot, float x, float y)
 {
+    (void)x;
+    (void)y;
     return *(color_t*)slot->state;
 }
 
@@ -164,6 +170,7 @@ void pat_wave_update(slot_t* slot, mbeat_t t)
 
 void pat_wave_prevclick(slot_t * slot, float x, float y){
     pat_wave_state_t* state = (pat_wave_state_t*)slot->state;
+    (void)state;
     /* I don't know how I feel about resetting the state yet...
     state->phase = 0.;
     state->last_t = fmod(state->last_t, 16.0);
@@ -256,6 +263,7 @@ void pat_bubble_del(pat_state_pt state)
 
 void pat_bubble_update(slot_t* slot, long t)
 {
+    (void)t;
     pat_bubble_state_t* state = (pat_bubble_state_t*)slot->state;
     state->color = param_to_color(slot->param_states[BUBBLE_COLOR].value);
     state->r = slot->param_states[BUBBLE_R].value;

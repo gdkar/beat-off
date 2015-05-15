@@ -75,7 +75,7 @@ color_t render_composite_slot_hits(slot_t * slot, float x, float y) {
 }
 
 static struct active_hit * alloc_hit(hit_t * hit){
-    struct active_hit * ah;
+    struct active_hit * ah = 0;
 
     if(n_active_hits == N_MAX_ACTIVE_HITS){
         ah = &active_hits[N_MAX_ACTIVE_HITS-1];
@@ -93,19 +93,18 @@ static struct active_hit * alloc_hit(hit_t * hit){
             }
         }
     }
+    if(ah){
+      ah->param_values = malloc(hit->n_params * sizeof(float));
+      if(!ah->param_values) return 0;
+      memset(ah->param_values, 0, hit->n_params * sizeof(float));
 
-    ah->param_values = malloc(hit->n_params * sizeof(float));
-    if(!ah->param_values) return 0;
-    memset(ah->param_values, 0, hit->n_params * sizeof(float));
-
-    ah->hit = hit;
-    n_active_hits++;
-
+      ah->hit = hit;
+      n_active_hits++;
+    }
     return ah;
 }
 
 static void free_hit(struct active_hit * active_hit){
-    int i;
     if(!active_hit || !active_hit->hit) return;
 
     free(active_hit->param_values);
@@ -250,10 +249,15 @@ int hit_full_event(struct active_hit * active_hit, enum hit_event event, float e
 }
 
 void hit_full_prevclick(slot_t * slot, float x, float y){
+  (void)slot;
+  (void)x;
+  (void)y;
 
 }
 
 color_t hit_full_pixel(struct active_hit * active_hit, float x, float y) {
+    (void)x;
+    (void)y;
     struct hit_full_state * state = active_hit->state;
     color_t color = state->color;
     color.a = state->base_alpha * state->x;
@@ -370,6 +374,9 @@ int hit_pulse_event(struct active_hit * active_hit, enum hit_event event, float 
 }
 
 void hit_pulse_prevclick(slot_t * slot, float x, float y){
+  (void)slot;
+  (void)x;
+  (void)y;
 
 }
 
@@ -500,6 +507,9 @@ int hit_circle_event(struct active_hit * active_hit, enum hit_event event, float
 }
 
 void hit_circle_prevclick(slot_t * slot, float x, float y){
+  (void)slot;
+  (void)x;
+  (void)y;
 
 }
 

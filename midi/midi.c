@@ -95,7 +95,7 @@ void midi_refresh_devices(){
     int n = Pm_CountDevices();
     for(int i = 0; i < n; i++)
     {
-        PmDeviceInfo* device = Pm_GetDeviceInfo(i);
+        const PmDeviceInfo* device = Pm_GetDeviceInfo(i);
         if(device->input)
         {
             for(int j = 0; j < n_controllers_enabled; j++)
@@ -146,6 +146,7 @@ static int midi_check_errors(int i){
 
 static int midi_run(void* args)
 {
+    (void)args;
     PmError err;
 
     err = Pm_Initialize();

@@ -21,7 +21,8 @@ int serial_set_attribs (int, int);
 void serial_set_blocking (int, int);
 
 uint8_t match_destination(uint8_t* dest){
-    uint32_t addr = *(uint32_t *)dest;
+    uint32_t *dest_ptr = (uint32_t*)dest;
+    uint32_t addr = dest_ptr[0];
     return addr == 0;
 }
 
@@ -111,8 +112,8 @@ char lux_tx_packet(struct lux_frame *cmd){
 
     if(!cmd)
         return -30;
-
-    *(uint32_t*)lux_destination = cmd->destination;
+    uint32_t*   lux_destination_ptr = (uint32_t*)lux_destination;
+    lux_destination_ptr[0] = cmd->destination;
     if(cmd->length > LUX_PACKET_MAX_SIZE)
         return -31;
     lux_packet_length = cmd->length;
@@ -149,7 +150,8 @@ char lux_rx_packet(struct lux_frame *response, int timeout_ms){
         return -41;
 
     response->length = lux_packet_length;
-    response->destination = *(uint32_t *) lux_destination;
+    uint32_t* lux_destination_ptr   = (uint32_t*)   lux_destination;
+    response->destination = lux_destination_ptr[0];
     memset(&response->data, 0, LUX_PACKET_MAX_SIZE);
     memcpy(&response->data, lux_packet, lux_packet_length);
 
@@ -157,7 +159,7 @@ char lux_rx_packet(struct lux_frame *response, int timeout_ms){
 }
 
 void lux_hal_enable_rx(){
-    const int r = TIOCM_RTS;
+    /*const int r = TIOCM_RTS;*/
     lux_is_transmitting = 0;
     //SDL_Delay(1);
     //ioctl(ser, TIOCMBIS, &r);
@@ -181,7 +183,8 @@ int16_t lux_hal_bytes_to_read(){
 
 uint8_t lux_hal_read_byte(){
     uint8_t byte = 0;
-    read(ser, &byte, 1);
+    int ignore = read(ser, &byte, 1);
+    (void)ignore;
     return byte;
 }
 
@@ -190,7 +193,8 @@ int16_t lux_hal_bytes_to_write(){
 }
 
 void lux_hal_write_byte(uint8_t byte){
-    write(ser, &byte, 1);
+    int ignore = write(ser, &byte, 1);
+    (void) ignore;
 }
 
 uint8_t lux_hal_tx_flush(){

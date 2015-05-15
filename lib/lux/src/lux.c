@@ -5,7 +5,7 @@
 // Global variables
 
 // Useful buffers for the application
-uint8_t lux_destination[LUX_DESTINATION_SIZE];
+uint8_t  lux_destination[LUX_DESTINATION_SIZE];
 uint8_t lux_packet[LUX_PACKET_MEMORY_ALLOCATED_SIZE];
 uint16_t lux_packet_length;
 
@@ -59,8 +59,8 @@ static uint8_t cobs_remaining;
 static uint8_t cobs_add_zero;
 
 // Buffer and pointers for the COBS encoder to hold the current block
-static uint8_t cobs_encoder_fill_ptr;
-static uint8_t cobs_encoder_send_ptr;
+static uint16_t cobs_encoder_fill_ptr;
+static uint16_t cobs_encoder_send_ptr;
 static uint8_t cobs_buffer[256];
 
 // Local functions

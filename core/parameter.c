@@ -90,6 +90,7 @@ void float_to_string(float val, char * buf, int n){
 }
 
 void quant_osc_to_string(float val, char * buf, int n){
+    (void) val;
     snprintf(buf, n, "Sine");
 }
 

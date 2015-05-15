@@ -39,7 +39,7 @@ INC  = -I. -Ilib/lux/inc -Ilib -L/usr/local/lib -L/usr/lib
 LIB  = -lm -lSDL -lSDL_ttf -lSDL_gfx -lpthread -lportaudio -lvamp-hostsdk -lportmidi #-lporttime
 
 # Assembler, compiler, and linker flags
-OPTFLAGS	= -g -O3 -Wall -Wextra -Wno-missing-field-initializers -Wno-missing-field-initializers -Wno-unused-parameter
+OPTFLAGS	= -g -O3 -Wall -Wextra -Werror -Wno-missing-field-initializers -Wno-missing-field-initializers
 CXXFLAGS  = $(OPTFLAGS) $(INC)  -std=gnu++14 -Wno-c++11-narrowing
 CFLAGS    = $(OPTFLAGS) $(INC) -std=gnu11
 LFLAGS    = $(OPTFLAGS) $(INC)

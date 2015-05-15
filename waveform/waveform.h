@@ -27,6 +27,7 @@ enum freq_bin_i {
 extern struct waveform_bin waveform_bins[];
 extern struct waveform_bin beat_bin;
 
+void waveform_add_beatline();
 void waveform_init();
 void waveform_update(chunk_pt chunk);
 void waveform_del();

@@ -18,7 +18,7 @@ static long pt_mb;
 
 static SDL_mutex* updating;
 
-static enum {
+static enum __attribute__((unused)){
     MANUAL,
     AUTOMATIC,
 } timebase_state;
@@ -40,6 +40,7 @@ void timebase_del()
 
 void timebase_update(chunk_pt chunk)
 {
+  (void)chunk;
 }
 
 static long get_cur_mb(long cur_ms)
@@ -71,7 +72,7 @@ void timebase_tap()
 long timebase_get()
 {
     long cur_ms = SDL_GetTicks();
-    static last_result = 0;
+    static long last_result = 0;
 
     if(SDL_LockMutex(updating)) FAIL("Unable to lock mutex: %s\n", SDL_GetError());
     long result = get_cur_mb(cur_ms);

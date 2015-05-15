@@ -21,8 +21,9 @@ static SDL_Thread* audio_thread;
 
 static float chunk[NUM_CHANNELS * FRAMES_PER_BUFFER];
 
-static int audio_run(void* UNUSED args)
+static int audio_run(void*  args)
 {
+    (void) args;
     PaStreamParameters inputParameters;
     PaStream *stream = NULL;
     PaError err;

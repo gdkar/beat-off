@@ -161,6 +161,7 @@ void inp_lpf_init(signal_t * signal){
 }
 
 void inp_lpf_update(signal_t * signal, mbeat_t t){
+    (void)t;
     inp_lpf_state_t * state = (inp_lpf_state_t *) signal->state;
     if(!state) return;
     float x = signal->param_states[LPF_INPUT].value;
@@ -242,8 +243,9 @@ void inp_agc_init(signal_t * signal){
 }
 
 void inp_agc_update(signal_t * signal, mbeat_t t){
+    (void)t;
     if(!signal->state) return;
-    inp_agc_state_t * state = (inp_lpf_state_t *) signal->state;
+    inp_agc_state_t * state = (inp_agc_state_t *) signal->state;
 
     float x = signal->param_states[AGC_INPUT].value;
     float min = signal->param_states[AGC_MIN].value;

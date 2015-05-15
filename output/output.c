@@ -26,14 +26,14 @@ static SDL_Thread* output_thread;
 
 static int output_run(void* args)
 {
+    (void)args;
     struct lux_frame lf;
     char r;
     char need_delay;
     int c = 0;
     int last_tick;
-    
-    while(output_running)
-    {
+    (void)last_tick; 
+    while(output_running){
         mbeat_t tb = timebase_get();
 
         update_patterns(tb);
@@ -41,10 +41,8 @@ static int output_run(void* args)
         update_signals(tb);
 
         need_delay = 1;
-        for(int i=0; i<n_output_strips; i++)
-        {
-            if(output_strips[i].bus < 0)
-                continue;
+        for(int i=0; i<n_output_strips; i++){
+            if(output_strips[i].bus < 0) continue;
 
             need_delay = 0;
 
@@ -107,6 +105,9 @@ void output_start()
         struct lux_frame cmd;
         struct lux_frame resp;
         char r;
+        (void)cmd;
+        (void)resp;
+        (void)r;
         printf("Serial initialized\n");
         output_running = 1;
 

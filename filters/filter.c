@@ -16,7 +16,8 @@ struct filter_lpf_agc_state {
     double lpf_alpha;
 };
 
-void filter_diodelpf_agc_update(filter_t * filter, mbeat_t UNUSED t_msec, double value){
+void filter_diodelpf_agc_update(filter_t * filter, mbeat_t t_msec, double value){
+    PARAM_UNUSED t_msec;
     struct filter_lpf_agc_state * state = filter->state;
 
     state->agc_scale *= state->agc_alpha;
@@ -30,7 +31,8 @@ void filter_diodelpf_agc_update(filter_t * filter, mbeat_t UNUSED t_msec, double
     param_output_set(&filter->output, value / state->agc_scale);
 }
 
-void filter_lpf_agc_update(filter_t * filter, mbeat_t UNUSED t_msec, double value){
+void filter_lpf_agc_update(filter_t * filter, mbeat_t t_msec, double value){
+    PARAM_UNUSED t_msec;
     struct filter_lpf_agc_state * state = filter->state;
 
     state->agc_scale *= state->agc_alpha;
@@ -48,9 +50,9 @@ void filter_lpf_agc_update(filter_t * filter, mbeat_t UNUSED t_msec, double valu
 
 void filter_beat_update(filter_t * filter, mbeat_t t_msec, double value)
 {
-    (void)filter;
-    (void)t_msec;
-    (void)value;
+    PARAM_UNUSED (filter);
+    PARAM_UNUSED (t_msec);
+    PARAM_UNUSED (value);
     timebase_tap();
     waveform_add_beatline();
     //printf("Beat: %d\n", t_msec);

@@ -6,6 +6,7 @@
 #include "util/math.h"
 #include "ui/graph.h"
 #include "core/time.h"
+#include "core/err.h"
 
 #define N_SIGNALS 5
 #ifndef M_PI
@@ -161,7 +162,7 @@ void inp_lpf_init(signal_t * signal){
 }
 
 void inp_lpf_update(signal_t * signal, mbeat_t t){
-    (void)t;
+    PARAM_UNUSED (t);
     inp_lpf_state_t * state = (inp_lpf_state_t *) signal->state;
     if(!state) return;
     float x = signal->param_states[LPF_INPUT].value;
@@ -243,7 +244,7 @@ void inp_agc_init(signal_t * signal){
 }
 
 void inp_agc_update(signal_t * signal, mbeat_t t){
-    (void)t;
+    PARAM_UNUSED (t);
     if(!signal->state) return;
     inp_agc_state_t * state = (inp_agc_state_t *) signal->state;
 

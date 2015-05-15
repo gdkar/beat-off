@@ -21,7 +21,7 @@ void graph_init()
 
 void graph_del(graph_state_t* state)
 {
-    (void)state;
+    PARAM_UNUSED (state);
     SDL_FreeSurface(graph_surface);
 }
 

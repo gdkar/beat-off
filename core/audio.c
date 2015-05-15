@@ -23,7 +23,7 @@ static float chunk[NUM_CHANNELS * FRAMES_PER_BUFFER];
 
 static int audio_run(void*  args)
 {
-    (void) args;
+    PARAM_UNUSED args;
     PaStreamParameters inputParameters;
     PaStream *stream = NULL;
     PaError err;

@@ -1,5 +1,6 @@
 #include <math.h>
 
+#include "core/err.h"
 #include "core/parameter.h"
 
 void param_output_set(param_output_t * output, float value){
@@ -90,7 +91,7 @@ void float_to_string(float val, char * buf, int n){
 }
 
 void quant_osc_to_string(float val, char * buf, int n){
-    (void) val;
+    PARAM_UNUSED val;
     snprintf(buf, n, "Sine");
 }
 

@@ -146,7 +146,7 @@ static int midi_check_errors(int i){
 
 static int midi_run(void* args)
 {
-    (void)args;
+    PARAM_UNUSED (args);
     PmError err;
 
     err = Pm_Initialize();

@@ -8,5 +8,5 @@
 #define FAIL(...) {ERROR(__VA_ARGS__); exit(EXIT_FAILURE);}
 
 #define UNUSED __attribute__ ((unused))
-
+#define PARAM_UNUSED (void)
 #endif

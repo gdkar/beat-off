@@ -40,7 +40,7 @@ void timebase_del()
 
 void timebase_update(chunk_pt chunk)
 {
-  (void)chunk;
+  PARAM_UNUSED (chunk);
 }
 
 static long get_cur_mb(long cur_ms)

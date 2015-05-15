@@ -26,13 +26,13 @@ static SDL_Thread* output_thread;
 
 static int output_run(void* args)
 {
-    (void)args;
+    PARAM_UNUSED args;
     struct lux_frame lf;
     char r;
     char need_delay;
     int c = 0;
     int last_tick;
-    (void)last_tick; 
+    PARAM_UNUSED last_tick; 
     while(output_running){
         mbeat_t tb = timebase_get();
 
@@ -105,9 +105,9 @@ void output_start()
         struct lux_frame cmd;
         struct lux_frame resp;
         char r;
-        (void)cmd;
-        (void)resp;
-        (void)r;
+        PARAM_UNUSED cmd;
+        PARAM_UNUSED resp;
+        PARAM_UNUSED r;
         printf("Serial initialized\n");
         output_running = 1;
 

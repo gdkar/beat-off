@@ -745,14 +745,14 @@ static int mouse_click_hit_slot(int index, struct xy xy)
 }
 
 static int mouse_click_output(int index, struct xy xy){
-  (void)index;
-  (void)xy;
+  PARAM_UNUSED (index);
+  PARAM_UNUSED (xy);
     return 0;
 }
 
 static int mouse_click_midi(int index, struct xy xy){
-  (void)index;
-  (void)xy;
+  PARAM_UNUSED (index);
+  PARAM_UNUSED (xy);
     //midi_refresh_devices();
     return 0;
 }

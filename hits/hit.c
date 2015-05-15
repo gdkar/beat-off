@@ -249,15 +249,15 @@ int hit_full_event(struct active_hit * active_hit, enum hit_event event, float e
 }
 
 void hit_full_prevclick(slot_t * slot, float x, float y){
-  (void)slot;
-  (void)x;
-  (void)y;
+  PARAM_UNUSED slot;
+  PARAM_UNUSED x;
+  PARAM_UNUSED y;
 
 }
 
 color_t hit_full_pixel(struct active_hit * active_hit, float x, float y) {
-    (void)x;
-    (void)y;
+    PARAM_UNUSED x;
+    PARAM_UNUSED y;
     struct hit_full_state * state = active_hit->state;
     color_t color = state->color;
     color.a = state->base_alpha * state->x;
@@ -374,9 +374,9 @@ int hit_pulse_event(struct active_hit * active_hit, enum hit_event event, float 
 }
 
 void hit_pulse_prevclick(slot_t * slot, float x, float y){
-  (void)slot;
-  (void)x;
-  (void)y;
+  PARAM_UNUSED slot;
+  PARAM_UNUSED x;
+  PARAM_UNUSED y;
 
 }
 
@@ -507,9 +507,9 @@ int hit_circle_event(struct active_hit * active_hit, enum hit_event event, float
 }
 
 void hit_circle_prevclick(slot_t * slot, float x, float y){
-  (void)slot;
-  (void)x;
-  (void)y;
+  PARAM_UNUSED (slot);
+  PARAM_UNUSED (x);
+  PARAM_UNUSED (y);
 
 }
 

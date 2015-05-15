@@ -184,7 +184,7 @@ int16_t lux_hal_bytes_to_read(){
 uint8_t lux_hal_read_byte(){
     uint8_t byte = 0;
     int ignore = read(ser, &byte, 1);
-    (void)ignore;
+    PARAM_UNUSED ignore;
     return byte;
 }
 
@@ -194,7 +194,7 @@ int16_t lux_hal_bytes_to_write(){
 
 void lux_hal_write_byte(uint8_t byte){
     int ignore = write(ser, &byte, 1);
-    (void) ignore;
+    PARAM_UNUSED  ignore;
 }
 
 uint8_t lux_hal_tx_flush(){

@@ -59,10 +59,9 @@ int main()
     FPSmanager fps_manager;
 
     SDL_initFramerate(&fps_manager);
-    SDL_setFramerate(&fps_manager, 40);
+    SDL_setFramerate(&fps_manager, 60);
 
-    while(ui_poll())
-    {
+    while(ui_poll()){
         //float tb = (float)timebase_get() / 1000; // TODO make all times long
         mbeat_t tb = timebase_get();
 

@@ -30,7 +30,7 @@ void timebase_init()
 
     pt_ms = 0;
     pt_mb = 0;
-    freq_mb_per_ms = 140. / 60;
+    freq_mb_per_ms = 140. / 60000;
 }
 
 void timebase_del()
@@ -55,12 +55,12 @@ void timebase_tap()
     long cur_mb = get_cur_mb(cur_ms);
 
     long error_mb = ((cur_mb + 1500) % 1000) - 500;
-    printf("ERROR: %ld\n", error_mb);
+    printf("current beat error: %ld\n", error_mb);
 
     if(SDL_LockMutex(updating)) FAIL("Unable to lock mutex: %s\n", SDL_GetError());
 
-    double new_freq = (1000. - (double)error_mb) / (double)(cur_ms - pt_ms);
-    double alpha = 1.0;
+    double new_freq = (1000. - (double)error_mb) / (double)(cur_ms - pt_ms)*1e-3;
+    double alpha = 0.5;
     freq_mb_per_ms = alpha * new_freq + (1. - alpha) * freq_mb_per_ms;
 
     pt_ms = cur_ms;
@@ -89,7 +89,7 @@ long timebase_get()
 
 float timebase_get_bpm()
 {
-    return freq_mb_per_ms * 60;
+    return freq_mb_per_ms * 60000;
 }
 
 // (mb/ms) * (1000 b / mb) * (s / 1000 ms) * (60 m /s) = 60 (mb / ms) / bpm

@@ -916,18 +916,15 @@ static int mouse_click(struct xy xy)
     //return 0;
 }
 
-int ui_poll()
-{
+int ui_poll(){
     SDL_Event e;
     struct midi_event * me;
     struct xy xy;
-    while(SDL_PollEvent(&e)) 
-    {
+    while(SDL_PollEvent(&e)) {
         // Not always valid depending on event type
         xy.x = e.button.x;
         xy.y = e.button.y;
-        switch(e.type)
-        {
+        switch(e.type){
             case SDL_QUIT:
                 return 0;
             case SDL_MOUSEBUTTONDOWN:

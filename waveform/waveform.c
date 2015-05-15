@@ -59,8 +59,7 @@ void waveform_init(){
 
 static inline void waveform_bin_update(struct waveform_bin * bin, float value){
     float * history = bin->history;
-    //XXX WTF?
-    memmove(history + 1, history, (WAVEFORM_HISTORY_SIZE - 16) * sizeof(float));
+    memmove(history + 1, history, (WAVEFORM_HISTORY_SIZE -1) * sizeof(float));
     *history = value;
 }
 
@@ -78,8 +77,9 @@ void waveform_update(chunk_pt chunk){
 
     static float slow = 0.;
     static float shigh = 0.;
-
+#ifndef MAX
 #define MAX(a, b) ((a > b) ? a : b)
+#endif
     for(int i = 0; i < FRAMES_PER_BUFFER; i++){
         vall = MAX(vall, fabs(chunk[i]));
 

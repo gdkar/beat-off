@@ -89,14 +89,12 @@ static int output_run(void* args)
     return 0;
 }
 
-void output_start()
-{
+void output_start(){
     output_buffers = malloc(sizeof(color_t*) * n_output_strips);
 
     if(!output_buffers) FAIL("Could not allocate output buffer array");
 
-    for(int i=0; i<n_output_strips; i++)
-    {
+    for(int i=0; i<n_output_strips; i++){
         output_buffers[i] = malloc(sizeof(color_t) * output_strips[i].length);
         if(!output_buffers[i]) FAIL("Could not allocate output buffer");
     }
@@ -150,14 +148,10 @@ void output_start()
     }
 }
 
-void output_stop()
-{
+void output_stop(){
     output_running = 0;
-
     SDL_WaitThread(output_thread, 0);
-
-    for(int i=0; i<n_output_strips; i++)
-    {
+    for(int i=0; i<n_output_strips; i++){
         free(output_buffers[i]);
     }
 

@@ -1,7 +1,7 @@
 #include <math.h>
 
 #include "core/parameter.h"
-
+#include "core/defs.h"
 void param_output_set(param_output_t * output, float value){
     param_state_t * pstate = output->connected_state;
     // Set local copy
@@ -90,6 +90,7 @@ void float_to_string(float val, char * buf, int n){
 }
 
 void quant_osc_to_string(float val, char * buf, int n){
+    PARAM_UNUSED val;
     snprintf(buf, n, "Sine");
 }
 

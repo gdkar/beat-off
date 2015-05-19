@@ -96,7 +96,7 @@ void midi_refresh_devices(){
     int n = Pm_CountDevices();
     for(int i = 0; i < n; i++)
     {
-        PmDeviceInfo* device = Pm_GetDeviceInfo(i);
+        const PmDeviceInfo* device = Pm_GetDeviceInfo(i);
         if(device->input)
         {
             for(int j = 0; j < n_controllers_enabled; j++)
@@ -147,6 +147,7 @@ static int midi_check_errors(int i){
 
 static int midi_run(void* args)
 {
+    PARAM_UNUSED args;
     PmError err;
 
     err = Pm_Initialize();
@@ -241,7 +242,7 @@ has_collapsed_event:
                 unsigned char data1 = Pm_MessageData1(m);
                 unsigned char data2 = Pm_MessageData2(m);
 
-                printf("Device %d event %d %d %d %li - %d\n", i, event, data1, data2, events[j].timestamp, n_recent_events);
+                printf("Device %d event %d %d %d %d - %d\n", i, event, data1, data2, events[j].timestamp, n_recent_events);
                 struct midi_connection_table * ct;
                 ct = connection_table;
                 while(ct){

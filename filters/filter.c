@@ -48,6 +48,9 @@ void filter_lpf_agc_update(filter_t * filter, mbeat_t UNUSED t_msec, double valu
 
 void filter_beat_update(filter_t * filter, mbeat_t t_msec, double value)
 {
+    PARAM_UNUSED filter;
+    PARAM_UNUSED t_msec;
+    PARAM_UNUSED value;
     if(timebase_source == TB_AUTOMATIC){
         timebase_tap(0.95);
     }

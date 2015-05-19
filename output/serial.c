@@ -157,7 +157,7 @@ char lux_rx_packet(struct lux_frame *response, int timeout_ms){
 }
 
 void lux_hal_enable_rx(){
-    const int r = TIOCM_RTS;
+//    const int r = TIOCM_RTS;
     lux_is_transmitting = 0;
     //SDL_Delay(1);
     //ioctl(ser, TIOCMBIS, &r);

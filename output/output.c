@@ -27,11 +27,10 @@ static SDL_Thread* output_thread;
 
 static int output_run(void* args)
 {
+    PARAM_UNUSED args;
     struct lux_frame lf;
     char r;
     char need_delay;
-    int c = 0;
-    int last_tick;
     FPSmanager fps_manager;
 
     SDL_initFramerate(&fps_manager);
@@ -112,9 +111,9 @@ void output_start()
     }
 
     if(serial_init()){
-        struct lux_frame cmd;
-        struct lux_frame resp;
-        char r;
+//        struct lux_frame cmd;
+//        struct lux_frame resp;
+//        char r;
         printf("Serial initialized\n");
         output_running = 1;
 

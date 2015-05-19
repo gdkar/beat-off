@@ -750,10 +750,14 @@ static int mouse_click_hit_slot(int index, struct xy xy)
 }
 
 static int mouse_click_output(int index, struct xy xy){
+    PARAM_UNUSED  index;
+    PARAM_UNUSED   xy;
     return 0;
 }
 
 static int mouse_click_midi(int index, struct xy xy){
+  PARAM_UNUSED index;
+  PARAM_UNUSED xy;
     //midi_refresh_devices();
     return 0;
 }
@@ -835,7 +839,7 @@ static int mouse_click(struct xy xy)
     
     // See if click is in master pane
     if(in_rect(&xy, &layout.master.rect, &offset)){
-        return;
+        return 0;
     }
 
     // See if click is in audio pane

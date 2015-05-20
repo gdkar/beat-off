@@ -10,14 +10,12 @@ SDL_Surface* slider_surface;
 SDL_Surface* alpha_slider_surface;
 
 static TTF_Font* param_font;
-static struct
-{
+static struct{
     param_state_t * state;
     float initial_value;
 } active_slider;
 
-void slider_init()
-{
+void slider_init(){
     slider_surface = SDL_CreateRGBSurface(0, layout.slider.w, layout.slider.h, 32, 0, 0, 0, 0);
     if(!slider_surface) FAIL("SDL_CreateRGBSurface Error: %s\n", SDL_GetError());
 
@@ -28,23 +26,19 @@ void slider_init()
     if(!param_font) FAIL("TTF_OpenFont Error: %s\n", SDL_GetError());
 }
 
-void slider_del()
-{
+void slider_del(){
     SDL_FreeSurface(slider_surface);
     TTF_CloseFont(param_font);
 }
 
-void slider_render_alpha(param_state_t* state)
-{
+void slider_render_alpha(param_state_t* state){
     param_output_t * param_output = param_state_output(state);
     SDL_Color handle_color = {0, 0, 80};
     SDL_Rect r;
 
     if(param_output){
         handle_color = param_output->handle_color;
-    }else{
-
-    }
+    }else{}
 
     SDL_FillRect(alpha_slider_surface, &layout.alpha_slider.rect, SDL_MapRGB(slider_surface->format, 20, 20, 20));
 
@@ -58,12 +52,10 @@ void slider_render_alpha(param_state_t* state)
                                                 handle_color.b));
 }
 
-void slider_render(parameter_t* param, param_state_t* state, SDL_Color c)
-{
+void slider_render(parameter_t* param, param_state_t* state, SDL_Color c){
     param_output_t * param_output = param_state_output(state);
     SDL_Color handle_color = {0, 0, 80};
     SDL_Color white = {255, 255, 255};
-
     SDL_Rect r;
     SDL_FillRect(slider_surface, &layout.slider.rect, SDL_MapRGB(slider_surface->format, 20, 20, 20));
 
@@ -91,25 +83,18 @@ void slider_render(parameter_t* param, param_state_t* state, SDL_Color c)
                                                 handle_color.b));
 }
 
-void mouse_drag_alpha_slider(struct xy xy)
-{
+void mouse_drag_alpha_slider(struct xy xy){
     float val = active_slider.initial_value -
                 (float)xy.y / (layout.alpha_slider.track_h - layout.alpha_slider.handle_h);
-
     if(val < 0) val = 0;
     else if(val > 1) val = 1;
-
     param_state_setq(active_slider.state, val);
 }
-
-void mouse_drag_param_slider(struct xy xy)
-{
+void mouse_drag_param_slider(struct xy xy){
     float val = active_slider.initial_value +
                 (float)xy.x / (layout.slider.track_w - layout.slider.handle_w);
-
     if(val < 0) val = 0;
     else if(val > 1) val = 1;
-
     param_state_setq(active_slider.state, val);
 }
 

@@ -2,9 +2,7 @@
 #define __GRAPH_H
 
 #include <SDL/SDL.h>
-
-typedef struct
-{
+typedef struct{
     float* history;
     long last_t;
     int width;

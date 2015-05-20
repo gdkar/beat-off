@@ -6,6 +6,7 @@
 #include <SDL/SDL_ttf.h>
 
 #include "ui/ui.h"
+#include "ui/ui_item.h"
 #include "ui/layout.h"
 #include "ui/graph.h"
 #include "ui/waveform.h"

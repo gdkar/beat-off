@@ -16,11 +16,9 @@ void ui_waveform_init(){
     if(layout.waveform.skip * layout.waveform.w < WAVEFORM_HISTORY_SIZE)
         skip = layout.waveform.skip;
 }
-
 void ui_waveform_render(){
     rect_t r;
     rect_origin(&layout.waveform.rect, &r);
-
     SDL_FillRect(waveform_surface, &r, SDL_MapRGB(waveform_surface->format, 30, 30, 30));
 #define MAX(a, b) ((a > b) ? a : b)
     int h;
@@ -30,8 +28,7 @@ void ui_waveform_render(){
         float * history = waveform_bins[j].history;
         c = waveform_bins[j].color;
 
-        for(int i = 0; i < layout.waveform.w; i++)
-        {
+        for(int i = 0; i < layout.waveform.w; i++){
             float x = 0.;
             for(int k = 0; k < skip; k++){
                 x = MAX(x, history[i * skip + k]);

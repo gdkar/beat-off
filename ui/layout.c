@@ -2,19 +2,16 @@
 #include "ui/layout.h"
 #include "util/ini.h"
 #include "ui/text.h"
-
 struct layout layout = {
     #define CFGSECTION(w, d...) .w = { d },
     #define CFG(n, type, default) .n = default,
     #include "layout.def"
 };
-
 char* mystrdup(const char* s) {
     char* p = malloc(strlen(s)+1);
     if (p) strcpy(p, s);
     return p;
 }
-
 static int parse_layout(void * user, const char * section, const char * name, const char * value){
     char * sptr;
     struct layout * cfg = (struct layout *) user;
@@ -37,7 +34,6 @@ int dump_layout(struct layout* cfg, char * filename){
     #include "layout.def"
 
     fclose(stream);
-
     return 0;
 }
 

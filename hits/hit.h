@@ -1,8 +1,8 @@
 #ifndef __HIT_H_
 #define __HIT_H_
 
-#include "core/slot.h"
 #include "core/parameter.h"
+#include "util/color.h"
 #include "core/time.h"
 #include <SDL/SDL_mutex.h>
 
@@ -54,6 +54,10 @@ struct active_hit { // Needs a lock
     mbeat_t start;
     void * state;
 };
+
+void update_hits(mbeat_t t);
+void hit_load(struct slot* slot, struct hit * hit);
+void hit_unload(struct slot* slot);
 
 color_t render_composite_hits(color_t base, float x, float y);
 color_t render_composite_slot_hits(struct slot * slot, float x, float y);

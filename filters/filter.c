@@ -1,12 +1,8 @@
-#include "core/parameter.h"
-#include "core/err.h"
-#include "filters/filter.h"
-#include "filters/vamp.h"
-#include "timebase/timebase.h"
-#include "waveform/waveform.h"
+#include "core/internal.h"
 
 #define N_FILTERS 3
 
+#if 0
 int n_filtered_chunks = 0;
 
 struct filter_lpf_agc_state {
@@ -164,4 +160,5 @@ void filters_update(chunk_pt chunk){
     }
     n_filtered_chunks++;
 }
+#endif
 

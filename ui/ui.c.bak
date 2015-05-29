@@ -1,29 +1,5 @@
-#include <math.h>
-#include <stdint.h>
+#include "core/internal.h"
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_gfxPrimitives.h>
-#include <SDL/SDL_ttf.h>
-
-#include "ui/ui.h"
-#include "ui/layout.h"
-#include "ui/graph.h"
-#include "ui/waveform.h"
-#include "ui/slider.h"
-#include "ui/text.h"
-#include "core/err.h"
-#include "core/parameter.h"
-#include "core/slot.h"
-#include "filters/filter.h"
-#include "waveform/waveform.h"
-#include "hits/hit.h"
-#include "midi/midi.h"
-#include "midi/layout.h"
-#include "midi/controllers.h"
-#include "output/slice.h"
-#include "patterns/pattern.h"
-#include "signals/signal.h"
-#include "timebase/timebase.h"
 
 #define SURFACES \
     X(master_preview, layout.master) \

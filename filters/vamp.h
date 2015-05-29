@@ -5,12 +5,11 @@
 extern "C" {
 #endif
 
-#include "filters/filter.h"
-#include "core/audio.h"
+struct filter;
 
-int vamp_plugin_load(filter_t * filter);
-void vamp_plugin_unload(filter_t * filter);
-int vamp_plugin_update(filter_t * filter, chunk_pt chunk);
+int vamp_plugin_load(struct filter * filter);
+void vamp_plugin_unload(struct filter * filter);
+int vamp_plugin_update(struct filter * filter, float * chunk);
 
 #ifdef __cplusplus
 }

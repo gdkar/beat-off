@@ -1,17 +1,5 @@
-#include <portmidi.h>
-#include <string.h>
+#include "core/internal.h"
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_thread.h>
-#include <SDL/SDL_timer.h>
-
-#include "core/err.h"
-#include "midi/controllers.h"
-#include "midi/midi.h"
-#include "midi/layout.h"
-#include "core/parameter.h"
-#include "ui/ui.h"
-#include "util/math.h"
 
 #define MIDI_BUFFER_SIZE 256
 //#define MIN(x, y) ((x > y) ? y : x)
@@ -19,7 +7,7 @@
 
 #define MIDI_SELECT_DATA_THRESHOLD 32  // 1/4  of the range
 #define MIDI_SELECT_RATIO_THRESHOLD 0.15
-
+#if 0
 static int midi_running;
 static SDL_Thread* midi_thread;
 
@@ -305,4 +293,4 @@ void midi_stop()
 
     SDL_WaitThread(midi_thread, 0);
 }
-
+#endif

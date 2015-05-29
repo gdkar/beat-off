@@ -2,8 +2,7 @@
 #define __MIDI_H
 
 #include <portmidi.h>
-#include "core/parameter.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #define N_DATA1 256
 
@@ -11,6 +10,7 @@
 #define SDL_MIDI_NOTE_OFF (SDL_USEREVENT + 1)
 
 #define MIDI_EV_STATUS_MASK 0xF0
+#if 0
 enum midi_event_status {
     MIDI_EV_NOTE_OFF = 0x80,
     MIDI_EV_NOTE_ON = 0x90,
@@ -39,13 +39,13 @@ struct midi_connection_table {
 
 #define MIDI_MAX_EVENTS 255
 
-void midi_connect_param(param_state_t * param, unsigned char device, unsigned char event, unsigned char data1);
-void midi_attach_param(param_state_t * param);
+void midi_connect_param(struct param_state * param, unsigned char device, unsigned char event, unsigned char data1);
+void midi_attach_param(pstruct aram_state * param);
 void midi_clear_attach();
 void midi_start();
 void midi_stop();
 void midi_refresh_devices();
 
 PmError pm_errmsg(PmError err);
-
+#endif
 #endif

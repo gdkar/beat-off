@@ -3,7 +3,7 @@
 #include <vamp-hostsdk/PluginHostAdapter.h>
 #include <vamp-hostsdk/PluginInputDomainAdapter.h>
 #include <vamp-hostsdk/PluginLoader.h>
-
+#include "core/debug.h"
 extern "C" {
 #include "core/audio.h"
 #include "filters/filter.h"
@@ -18,7 +18,7 @@ using Vamp::HostExt::PluginLoader;
 using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
-int vamp_plugin_load(filter_t * filter){
+int vamp_plugin_load(struct filter * filter){
     Plugin *plugin;
     Plugin::OutputDescriptor od;
     PluginLoader *loader = PluginLoader::getInstance();
@@ -29,30 +29,30 @@ int vamp_plugin_load(filter_t * filter){
     filter->vamp_plugin = 0;
 
     key = loader->composePluginKey(string(filter->vamp_so), string(filter->vamp_id));
-    plugin = loader->loadPlugin(key, SAMPLE_RATE, PluginLoader::ADAPT_ALL);
+    plugin = loader->loadPlugin(key, 96000, PluginLoader::ADAPT_ALL);
     //plugin = loader->loadPlugin(key, SAMPLE_RATE, 0);
 
     if(!plugin){
-        printf("Unable to load vamp plugin %s\n", filter->vamp_so);
+        ERROR("Unable to load vamp plugin %s\n", filter->vamp_so);
         return 1;
     }
-    printf("Loaded vamp plugin: %s\n", plugin->getIdentifier().c_str());
+    INFO("Loaded vamp plugin: %s\n", plugin->getIdentifier().c_str());
 
     Plugin::OutputList outputs = plugin->getOutputDescriptors();
     if(outputs.size() <= filter->vamp_output){
-        printf("Error with vamp plugin: no output %d\n", filter->vamp_output);
+        ERROR("vamp plugin: no output %d\n", filter->vamp_output);
         return 1;
     }
     //od = outputs[filter->vamp_output];
     // TODO Do something with:
     // filter->output.label     od.identifier.c_str()
 
-    if(!plugin->initialise(1, FRAMES_PER_BUFFER, FRAMES_PER_BUFFER)){
-        printf("Error initing vamp plugin\n");
+    if(!plugin->initialise(1, 256 , 256)){
+        ERROR("initing vamp plugin\n");
         return 1;
     }
     if(plugin->getInputDomain() != Plugin::TimeDomain){
-        printf("Input not in time domain\n");
+        ERROR("Input not in time domain\n");
         return 1;
     }
 
@@ -65,11 +65,11 @@ static long rt_msec(RealTime rt){
     return rt.sec * 1000 + rt.msec();
 }
 
-int vamp_plugin_update(filter_t * filter, chunk_pt chunk){
+int vamp_plugin_update(struct filter * filter, float *chunk){
     // Returns number of events processed 
-    
+    int n_filtered_chunks  = 0;   
     Plugin * plugin = (Plugin *) filter->vamp_plugin;
-    RealTime rt = RealTime::frame2RealTime(n_filtered_chunks*FRAMES_PER_BUFFER, SAMPLE_RATE);
+    RealTime rt = RealTime::frame2RealTime(n_filtered_chunks*256, 96000);
     int n_features = 0;
     int event_time;
     double event_value;
@@ -90,14 +90,14 @@ int vamp_plugin_update(filter_t * filter, chunk_pt chunk){
         else
             event_value = 0.0;
         
-        filter->update(filter, event_time, event_value);
+//        filter->update(filter, event_time, event_value);
         n_features++;
     }
 
     return n_features;
 }
 
-void vamp_plugin_unload(filter_t * filter){
+void vamp_plugin_unload(struct filter* filter){
     Plugin * plugin = (Plugin *) filter->vamp_plugin;
     filter->vamp_plugin = 0;
     delete plugin;

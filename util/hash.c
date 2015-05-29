@@ -1,8 +1,5 @@
-#include "util/hash.h"
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include "core/internal.h"
+
 static inline uint64_t xorshift128plus(xorshift128_state_t* state) { 
 	uint64_t s1 = state->s[ 0 ];
 	const uint64_t s0 = state->s[ 1 ];

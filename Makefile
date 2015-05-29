@@ -16,6 +16,7 @@ C_SRC += $(wildcard ui/*.c)
 C_SRC += $(wildcard util/*.c)
 C_SRC += $(wildcard lib/lux/src/*.c)
 CPP_SRC += $(wildcard filters/*.cpp)
+CPP_SRC  = $(wildcard core/*.cpp)
 
 C_INC += $(wildcard filters/*.h)
 C_INC += $(wildcard lib/*.h)
@@ -36,7 +37,7 @@ OBJECTS += $(patsubst %.cpp,.obj/%.o,$(CPP_SRC))
 DEPS = $(OBJECTS:.o=.d)
 
 INC  = -I. -Ilib/lux/inc -Ilib 
-LIB  = -lm -lSDL -lSDL_ttf -lSDL_gfx -lpthread -lportaudio -lvamp-hostsdk -lportmidi #-lporttime
+LIB  = -lm -lSDL2 -lSDL_ttf -lSDL_gfx -lpthread -lportaudio -lvamp-hostsdk -lportmidi #-lporttime
 
 # Assembler, compiler, and linker flags
 OPTFLAGS	= -g -ggdb -O3 -Wall -Wextra -Werror -Wno-missing-field-initializers

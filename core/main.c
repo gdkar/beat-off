@@ -4,6 +4,7 @@
 #include <SDL2/SDL_thread.h>
 #include <SDL2/SDL2_framerate.h>
 #include "ui/mainwin.h"
+#include "ui/boxlayout.h"
 int main()
 {
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
@@ -16,6 +17,32 @@ int main()
     SDL_setFramerate(&fps_manager, 40);
     SDL_Event received;
     widget *mainwin = widget_create(&mainwin_class,NULL,"The Main Window");
+    widget *box0 = widget_create(&hbox_class, mainwin,
+        "Box0",4l, 4l, 
+        192l,192l,192l,255l,
+        128l,128l,128l,255l,
+        80l,60l,480l,360l);
+     widget *box1 = widget_create(&hbox_class, box0,
+        "Box1",4l, 4l, 
+        192l,192l,0l,255l,
+        128l,128l,0l,255l,
+        20,15,320,240l);
+     widget_create(&hbox_class, box1,
+        "Box2",4l, 4l, 
+        192l,192l,0l,255l,
+        128l,128l,0l,255l,
+        20,15,40,60l);
+
+     widget_create(&hbox_class, box0,
+        "Box3",4l, 4l, 
+        192l,192l,0l,255l,
+        128l,128l,0l,255l,
+        160,120,20,15l);
+
+
+//    widget *box1    = widget_create(&hbox_class, mainwin,"Box1",32., 32., 128,128,128,192,192,192,160,360,320,120);
+    
+//    (void)box1;
     struct xy pt;
     while(1){
       while(SDL_WaitEvent(&received)){
@@ -30,7 +57,6 @@ int main()
             pt.x=-1,pt.y=-1;
         };
         widget_event_filter(mainwin,&pt, &received,NULL);
-      DEBUG("event  of type %d",received.type);
       }
         //float tb = (float)timebase_get() / 1000; // TODO make all times long
         /*

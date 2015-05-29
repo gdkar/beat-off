@@ -15,7 +15,7 @@ typedef struct widget       widget;
 typedef bool (*init_fn)   (widget * self, va_list ap                        );
 typedef bool (*hittest_fn)(widget * self, struct xy *pt                     );
 typedef bool (*event_fn  )(widget * self,  SDL_Event *evt, va_list ap       );
-typedef bool (*render_fn) (widget * self, SDL_Surface *onto, SDL_Rect *where );
+typedef bool (*render_fn) (widget * self, SDL_Renderer*onto, SDL_Rect *where );
 typedef void (*deinit_fn) (widget * self);
 
 struct widget_class {
@@ -46,7 +46,7 @@ struct widget {
 widget  * widget_create      (widget_class *cls, widget *parent, char *name, ... );
 bool      widget_post_event  (widget *self, SDL_Event *evt, ...                  );
 bool      widget_event_filter(widget *root, struct xy *pt, SDL_Event *evt, ...   );
-bool      widget_render      (widget *self, SDL_Surface *onto, SDL_Rect *where   );
+bool      widget_render      (widget *self, SDL_Renderer*onto, SDL_Rect *where   );
 void      widget_delete      (widget **selfp                                     );
 
 #endif

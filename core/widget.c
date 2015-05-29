@@ -5,7 +5,7 @@ widget * widget_create ( widget_class *cls, widget *parent, char *name, ... ){
   widget *self = calloc(1,sizeof(widget));
   memmove(&self->super, cls, sizeof(*cls));
   self->instance_data = calloc(1,cls->instance_data_size);
-
+  self->name = name ? strdup(name):NULL;
   self->parent = parent;
   CIRCLEQ_INIT(&self->children);
   if(self->parent ){
@@ -21,7 +21,7 @@ widget * widget_create ( widget_class *cls, widget *parent, char *name, ... ){
 }
 //bool widget_hittest( widget *self, struct xy *pt)
 //  {return (self && self->super.update &&  self->super.hittest(self,pt));}
-bool widget_render( widget *self, SDL_Surface *onto, SDL_Rect *where)
+bool widget_render( widget *self, SDL_Renderer *onto, SDL_Rect *where)
   {return (self && self->super.render && self->super.render(self, onto, where));}
 bool widget_post_event ( widget *self,  SDL_Event *evt, ...){
   va_list ap;
@@ -37,16 +37,16 @@ bool widget_event_filter( widget *root, struct xy *pt, SDL_Event *evt, ...){
   SPEW("processing an event through widget_event_filter");
   if((root!=NULL) &&(root->super.hittest(root,pt))){
       SPEW("hittest reported successful");
-      while(root){
+      if(root){
         widget *child;
-        CIRCLEQ_FOREACH( child, &root->children, siblings ){
+        for(child = root->children.cqh_first;child && ((void*)child!=(void*)&root->children) ; child=child->siblings.cqe_next)
           if ( child->super.hittest && child->super.hittest(child, pt )){
-            root = child;
-            break;
+            pt->x -= child->location.x;
+            pt->y -= child->location.y;
+            root   = child;
+            child  = root->children.cqh_first;
           }
         }
-        break;
-      }
       va_list ap;
       va_start(ap, evt);
       bool handled = false;

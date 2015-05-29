@@ -2,10 +2,6 @@
 #define __UTIL_MATH_H__
 
 
-#if defined( __SSE__ )
-#include "util/pommier/sse_mathfun.h"
-#endif
-
 #define SIN(x) sinf(x)
 #define COS(x) cosf(x)
 #define MAX(x, y) ((x) > (y) ? (x) : (y))

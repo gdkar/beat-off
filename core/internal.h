@@ -33,8 +33,9 @@
 #include "core/debug.h"
 #include "core/audio.h"
 #include "util/hash.h"
+#include "util/rect.h"
 #include "util/math.h"
-#include "core/widget.h"
+#include "core/object.h"
 #include "filters/filter.h"
-
+#include "ui/window.h"
 #endif

@@ -1,6 +1,11 @@
 AC_INIT([beat-off], [1.0.0], [zbanks@mit.edu], [https://github.com/ervanalb/beat-off])
 AC_CONFIG_HEADERS([src/confdefs.h])
 
+AC_HEADER_STDC
+AC_C_BIGENDIAN
+AC_C_CONST
+AC_C_INLINE
+
 AC_ARG_WITH([sdl], [
     AS_HELP_STRING([--without-sdl], [Disable SDL and user iterface])])
 
@@ -30,8 +35,8 @@ AC_SEARCH_LIBS([Pa_Initialize], [portaudio], [], [
 #    AC_MSG_ERROR([unable to find the Pa_ReadStream() function])])
 AC_SEARCH_LIBS([src_simple], [samplerate], [], [
     AC_MSG_ERROR(["unable to find the src_simple() function (libresample)"])])
-AC_SEARCH_LIBS([fftw_plan_dft_1d], [fftw3], [], [
-    AC_MSG_ERROR(["unable to find the fftw_plan_dft_1d() function (libfftw3)"])])
+AC_SEARCH_LIBS([fftwf_plan_dft_1d], [fftw3f], [], [
+    AC_MSG_ERROR(["unable to find the fftwf_plan_dft_1d() function (libfftw3f)"])])
 
 AC_SUBST([SDL_ENABLED], ["no"])
 AS_IF([test "x$with_sdl" != "xno"], [

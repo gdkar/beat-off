@@ -1,3 +1,4 @@
+#include <string.h>
 #include "audio/audio.h"
 #include "audio/input_pa.h"
 #include "core/err.h"
@@ -9,7 +10,8 @@ static float * chunk;
 
 int audio_pa_callback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags, void *userData){
     audio_callback_fn_pt callback = (audio_callback_fn_pt) userData;
-    if(callback(input))
+    memmove(chunk,input,sizeof(float)*frameCount);
+    if(callback(chunk))
         return paAbort;
     return paContinue;
 }

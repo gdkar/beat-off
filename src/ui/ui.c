@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_opengl.h>
 #include <SDL/SDL_gfxPrimitives.h>
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_framerate.h>
@@ -635,7 +636,7 @@ static void ui_render()
 
     ui_update_state_panel();
     SDL_BlitSurface(state_panel_pane, 0, screen, &layout.state_panel.rect);
-
+    SDL_GL_SwapBuffers();
     SDL_Flip(screen);
 }
 
@@ -1129,8 +1130,8 @@ static int ui_run(void* args)
     ui_init();
 
     SDL_initFramerate(&fps_manager);
-    SDL_setFramerate(&fps_manager, 100);
-    stat_fps = 100;
+    SDL_setFramerate(&fps_manager, 60);
+    stat_fps = 60;
 
     unsigned int last_tick = SDL_GetTicks();
     while(ui_running)

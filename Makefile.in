@@ -57,10 +57,10 @@ LIB  = -L/usr/local/lib -L/usr/lib @LIBS@
 # Assembler, compiler, and linker flags
 CXXFLAGS = $(INC) 
 CXXFLAGS += @CFLAGS@ -Ofast
-CXXFLAGS += -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wno-unused-parameter -Wuninitialized -Werror
+CXXFLAGS += -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wno-unused-parameter -Wuninitialized -Werror -Wno-array-bounds
 #CXXFLAGS += -funsafe-loop-optimizations -Wunsafe-loop-optimizations -ffast-math
 CXXFLAGS += -DTEXT_ANTIALIAS -DGRAPH_ANTIALIAS
-CFLAGS = $(CXXFLAGS) -std=c99 -D_POSIX_C_SOURCE
+CFLAGS = $(CXXFLAGS) -std=c99 -D_POSIX_C_SOURCE -march=native -g -ggdb
 LFLAGS  = $(LIB) @LDFLAGS@
 
 #DEBUG=DEBUG

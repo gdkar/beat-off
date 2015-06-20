@@ -16,7 +16,6 @@
 static int audio_running;
 static SDL_Thread* audio_thread;
 static struct btrack btrack;
-static double * double_chunk;
 
 static int audio_callback(chunk_pt chunk){
 #ifdef VAMP_ENABLED
@@ -25,11 +24,8 @@ static int audio_callback(chunk_pt chunk){
     waveform_update(chunk);
 
     // Convert chunk (float[]) to an array of doubles
-    for(int i = 0; i < config.audio.chunk_size; i++){
-        double_chunk[i] = *chunk++;
-    }
 
-    btrack_process_audio_frame(&btrack, double_chunk);
+    btrack_process_audio_frame(&btrack, chunk);
 
     if(btrack_beat_due_in_current_frame(&btrack)){
         if(timebase_source == TB_AUTOMATIC){
@@ -54,9 +50,6 @@ void audio_start()
     btrack_init(&btrack, config.audio.chunk_size, config.audio.chunk_size);
     timebase_init();
     waveform_init();
-
-    double_chunk = malloc(config.audio.chunk_size * sizeof(double));
-    if(!double_chunk) FAIL("Could not malloc space for double chunk.\n");
 
     audio_running = 1;
 

@@ -40,6 +40,7 @@ CFGSECTION(audio,
     CFG(use_jack, INT, 1)
     CFG(sample_rate, INT, 44100)
     CFG(chunk_size, INT, 128)
+    CFG(frame_size, INT, 1024)
 )
 
 #undef CFGSECTION

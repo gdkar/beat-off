@@ -1,6 +1,7 @@
 #ifndef __UI_H
 #define __UI_H
 
+#include "core/beat-off.h"
 #include "core/slot.h"
 #include "ui/layout.h"
 

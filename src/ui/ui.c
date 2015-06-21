@@ -1,9 +1,9 @@
+#include "core/beat-off.h"
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
 
 #include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
 #include <SDL/SDL_gfxPrimitives.h>
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_framerate.h>

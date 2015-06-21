@@ -22,7 +22,6 @@ void ui_waveform_render(){
     rect_origin(&layout.waveform.rect, &r);
 
     SDL_FillRect(waveform_surface, &r, SDL_MapRGB(waveform_surface->format, 30, 30, 30));
-#define MAX(a, b) ((a > b) ? a : b)
     int h;
     SDL_Color c;
     if(skip < 1) skip = 1;

@@ -1,6 +1,9 @@
 #ifndef __UTIL_MATH_H__
 #define __UTIL_MATH_H__
 
+
+#include <math.h>
+#include "util/sse_mathfun.h"
 #define SIN(x) sinf(x)
 #define COS(x) cosf(x)
 #define MAX(x, y) ((x) > (y) ? (x) : (y))

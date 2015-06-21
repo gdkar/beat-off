@@ -8,7 +8,6 @@
 
 SDL_Surface* graph_surface;
 
-#define MAX(x,y) ((x > y) ? x : y)
 
 void graph_init()
 {

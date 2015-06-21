@@ -1,6 +1,7 @@
 #ifndef __UI_LAYOUT_H__
 #define __UI_LAYOUT_H__
 
+#include "core/beat-off.h"
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>

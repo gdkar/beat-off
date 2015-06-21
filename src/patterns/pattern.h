@@ -4,7 +4,9 @@
 #include "core/time.h"
 #include "util/color.h"
 #include "core/parameter.h"
-
+#ifdef __cplusplus
+#define __restruct__
+#endif
 struct slot;
 
 typedef enum pat_command_status
@@ -25,7 +27,7 @@ typedef void* pat_state_pt;
 typedef void (*pat_init_fn_pt)(pat_state_pt);
 typedef void (*pat_update_fn_pt)(struct slot* slot, mbeat_t t);
 typedef void (*pat_command_fn_pt)(struct slot* slot, pat_command_t cmd);
-typedef color_t (*pat_render_fn_pt)(const void * restrict state, float x, float y);
+typedef color_t (*pat_render_fn_pt)(const void * __restrict__ state, float x, float y);
 
 typedef struct pattern
 {

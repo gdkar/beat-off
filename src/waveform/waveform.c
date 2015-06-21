@@ -86,8 +86,12 @@ void waveform_update(const chunk_pt chunk){
     static float qmid = 0.;
     static float qhigh = 0.;
 
+#ifndef MAX
 #define MAX(a, b) ((a > b) ? a : b)
+#endif
+#ifndef MIN
 #define MIN(a, b) ((a < b) ? a : b)
+#endif
 #define LB1 0.03
 #define LB2 0.0
 //#define LA2 0.9914878835315175  // exp(-pi * f_1 / F_n); F_n = 22050Hz; f_1 = 60Hz

@@ -10,6 +10,7 @@ PREFIX = @prefix@
 
 # Files to include
 C_SRC  = $(wildcard src/core/*.c)
+CPP_SRC  = $(wildcard src/entity/*.cpp)
 C_SRC += $(wildcard src/audio/*.c)
 C_SRC += $(wildcard src/dynamic/*.c)
 C_SRC += $(wildcard src/lib/*.c)
@@ -55,12 +56,12 @@ INC  = -I./src/ -I./BTrack/src/
 LIB  = -L/usr/local/lib -L/usr/lib @LIBS@
 
 # Assembler, compiler, and linker flags
-CXXFLAGS = $(INC) 
-CXXFLAGS += @CFLAGS@ -Ofast
-CXXFLAGS += -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wno-unused-parameter -Wuninitialized -Werror -Wno-array-bounds
-#CXXFLAGS += -funsafe-loop-optimizations -Wunsafe-loop-optimizations -ffast-math
-CXXFLAGS += -DTEXT_ANTIALIAS -DGRAPH_ANTIALIAS
-CFLAGS = $(CXXFLAGS) -std=c99 -D_POSIX_C_SOURCE -march=native -g -ggdb
+OPTFLAGS +=  -Ofast 
+OPTFLAGS += -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wno-unused-parameter -Wuninitialized -Werror -Wno-array-bounds $(INC)
+#OPTFLAGS += -funsafe-loop-optimizations -Wunsafe-loop-optimizations -ffast-math 
+OPTFLAGS += -DTEXT_ANTIALIAS -DGRAPH_ANTIALIAS -D_BSD_SOURCE -D_GNU_SOURCE -DPOSIX_C_SOURCE=200112
+CFLAGS = @CFLAGS@ -std=c11 -D_POSIX_C_SOURCE -march=native -g -ggdb $(OPTFLAGS)
+CXXFLAGS += @CXXFLAGS@ -std=gnu++14 $(OPTFLAGS)
 LFLAGS  = $(LIB) @LDFLAGS@
 
 #DEBUG=DEBUG

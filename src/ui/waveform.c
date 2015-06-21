@@ -1,3 +1,5 @@
+#include "core/beat-off.h"
+#include "util/math.h"
 #include "ui/waveform.h"
 #include "ui/layout.h"
 #include "core/err.h"

@@ -1,7 +1,6 @@
 #ifndef LOL_UTIL_H
 #define LOL_UTIL_H
 #ifdef __cplusplus
-#include "init.h"
 extern "C" {
 #endif
 #include "util/asm.h"

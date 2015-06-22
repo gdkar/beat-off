@@ -1,10 +1,19 @@
 AC_INIT([beat-off], [1.0.0], [zbanks@mit.edu], [https://github.com/ervanalb/beat-off])
 AC_CONFIG_HEADERS([src/confdefs.h])
-
+PKG_PROG_PKG_CONFIG
 AC_HEADER_STDC
 AC_C_BIGENDIAN
 AC_C_CONST
 AC_C_INLINE
+PKG_CHECK_MODULES([GLEW], [glew])
+AC_SUBST([GLEW_CLFAGS])
+AC_SUBST([GLEW_LIBS])
+PKG_CHECK_MODULES([GLFW], [glfw3])
+AC_SUBST([GLFW_CFLAGS])
+AC_SUBST([GLFW_LIBS])
+PKG_CHECK_MODULES([SDL], [sdl])
+AC_SUBST([SDL_CFLAGS])
+AC_SUBST([SDL_LIBS])
 
 AC_ARG_WITH([sdl], [
     AS_HELP_STRING([--without-sdl], [Disable SDL and user iterface])])

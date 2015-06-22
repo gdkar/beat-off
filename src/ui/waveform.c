@@ -33,7 +33,7 @@ void ui_waveform_render(){
         int hptr = waveform_bins[j].hptr; 
         hptr -= hptr % skip;
         c = waveform_bins[j].color;
-
+        float atten = 1./waveform_bins[j].attenuation;
         for(int i = 0; i < layout.waveform.w; i++)
         {
             float x = 0.;
@@ -43,7 +43,7 @@ void ui_waveform_render(){
                     hptr = WAVEFORM_HISTORY_SIZE;
                 x = MAX(x, history[hptr]);
             }
-            h = x * layout.waveform.h;
+            h = x * layout.waveform.h*atten;
             vlineRGBA(waveform_surface, layout.waveform.w - i, (layout.waveform.h + h) / 2, (layout.waveform.h - h) / 2, c.r, c.g, c.b, 255);
         }
     }

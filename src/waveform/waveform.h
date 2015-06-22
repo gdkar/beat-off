@@ -11,6 +11,8 @@
 struct waveform_bin {
     SDL_Color color;
     param_output_t output;
+    float attenuation;
+    int   holdoff;
     int hptr;
     float history[WAVEFORM_HISTORY_SIZE];
 };

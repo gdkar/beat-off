@@ -11,6 +11,7 @@ PREFIX = @prefix@
 # Files to include
 C_SRC  = $(wildcard src/core/*.c)
 CPP_SRC  = $(wildcard src/entity/*.cpp)
+C_SRC += $(wildcard src/entity/*.c)
 C_SRC += $(wildcard src/audio/*.c)
 C_SRC += $(wildcard src/dynamic/*.c)
 C_SRC += $(wildcard src/lib/*.c)
@@ -53,16 +54,17 @@ OBJECTS += $(patsubst %.cpp,%.o,$(CPP_SRC))
 DEPS = $(OBJECTS:.o=.d)
 
 INC  = -I./src/ -I./BTrack/src/
-LIB  = -L/usr/local/lib -L/usr/lib @LIBS@
+LIB  = -L/usr/local/lib -L/usr/lib @LIBS@ -lGLEW -lglfw3
 
 # Assembler, compiler, and linker flags
 OPTFLAGS +=  -Ofast 
 OPTFLAGS += -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wno-unused-parameter -Wuninitialized -Werror -Wno-array-bounds $(INC)
 #OPTFLAGS += -funsafe-loop-optimizations -Wunsafe-loop-optimizations -ffast-math 
 OPTFLAGS += -DTEXT_ANTIALIAS -DGRAPH_ANTIALIAS -D_BSD_SOURCE -D_GNU_SOURCE -DPOSIX_C_SOURCE=200112
-CFLAGS = @CFLAGS@ -std=c11 -D_POSIX_C_SOURCE -march=native -g -ggdb $(OPTFLAGS)
-CXXFLAGS += @CXXFLAGS@ -std=gnu++14 $(OPTFLAGS)
-LFLAGS  = $(LIB) @LDFLAGS@
+CFLAGS = @CFLAGS@ -std=c11 -D_POSIX_C_SOURCE -march=native -g -ggdb $(OPTFLAGS) @GLEW_CFLAGS@ @GLFW_CFLAGS@
+CXXFLAGS += @CXXFLAGS@ -std=gnu++14 $(OPTFLAGS)   @GLEW_CFLAGS@ @GLFW_CFLAGS@
+
+LFLAGS  = $(LIB) @LDFLAGS@ @GLEW_LIBS@ @GLFW_LIBS@
 
 #DEBUG=DEBUG
 ifdef DEBUG

@@ -56,12 +56,21 @@ void waveform_init(){
         memset(waveform_bins[i].history, 0, sizeof(WAVEFORM_HISTORY_SIZE * sizeof(float)));
         waveform_bins[i].hptr = 0;
         param_output_init(&waveform_bins[i].output, 0.);
+        waveform_bins[i].holdoff=0;
     }
     memset(beat_bin.history, 0, sizeof(WAVEFORM_HISTORY_SIZE * sizeof(float)));
     beat_bin.hptr = 0;
 }
 
 static inline void waveform_bin_update(struct waveform_bin * bin, float value){
+    float absv = fabsf(value);
+    if(absv > bin->attenuation){
+      bin->attenuation = 0.975 * bin->attenuation + 0.025*absv;
+      bin->holdoff = 0;
+    }else{
+      bin->holdoff ++;
+      if(bin->holdoff > 1024) bin->attenuation *=0.9995;
+    }
     if(bin->hptr >= WAVEFORM_HISTORY_SIZE)
         bin->hptr = 0;
     bin->history[bin->hptr++] = value;

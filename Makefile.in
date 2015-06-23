@@ -50,8 +50,8 @@ else
 CC_FINAL = $(CXX)
 endif
 
-OBJECTS = $(patsubst %.c,%.o,$(C_SRC))
-OBJECTS += $(patsubst %.cpp,%.o,$(CPP_SRC))
+OBJECTS = $(patsubst %.c,.obj/%.o,$(C_SRC))
+OBJECTS += $(patsubst %.cpp,.obj/%.o,$(CPP_SRC))
 DEPS = $(OBJECTS:.o=.d)
 
 INC  = -I./src/ -I./BTrack/src/
@@ -59,13 +59,13 @@ LIB  = -L/usr/local/lib -L/usr/lib @LIBS@ -lGLEW -lglfw3
 
 # Assembler, compiler, and linker flags
 OPTFLAGS +=  -Ofast 
-OPTFLAGS += -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wno-unused-parameter -Wuninitialized -Werror -Wno-array-bounds $(INC)
+OPTFLAGS += -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wno-unused-parameter -Wuninitialized -Werror -Wno-array-bounds  -march=native -g -ggdb
 #OPTFLAGS += -funsafe-loop-optimizations -Wunsafe-loop-optimizations -ffast-math 
 OPTFLAGS += -DTEXT_ANTIALIAS -DGRAPH_ANTIALIAS -D_BSD_SOURCE -D_GNU_SOURCE -DPOSIX_C_SOURCE=200112
-CFLAGS = @CFLAGS@ -std=c11 -D_POSIX_C_SOURCE -march=native -g -ggdb $(OPTFLAGS) @GLEW_CFLAGS@ @GLFW_CFLAGS@
-CXXFLAGS += @CXXFLAGS@ -std=gnu++14 $(OPTFLAGS) -g -ggdb  @GLEW_CFLAGS@ @GLFW_CFLAGS@
+CFLAGS = @CFLAGS@ @CPPFLAGS@ $(INC) -std=gnu11 -D_POSIX_C_SOURCE $(OPTFLAGS)
+CXXFLAGS += @CXXFLAGS@ @CPPFLAGS@ $(INC) -std=gnu++14 $(OPTFLAGS) 
 
-LFLAGS  = $(LIB) @LDFLAGS@ @GLEW_LIBS@ @GLFW_LIBS@
+LFLAGS  = $(LIB) @LDFLAGS@ 
 
 #DEBUG=DEBUG
 ifdef DEBUG
@@ -75,13 +75,25 @@ ifdef DEBUG
 endif
 
 -include $(DEPS)
-%.d : %.c
+.obj/%.d : %.c
+	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $< -MM -MT $(@:.d=.o) >$@
-%.d : %.cpp
+
+.obj/%.d : %.cpp
+	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
-ui/layout.o: ui/layout.c
+.obj/ui/layout.o: ui/layout.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -Wno-missing-field-initializers -c -o $@ $<
+
+.obj/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+.obj/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # Targets
 .PHONY: all
@@ -89,7 +101,8 @@ all: beat-off
 
 .PHONY: clean
 clean:
-	-rm -f $(OBJECTS) $(DEPS) beat-off
+	-rm -rf $(OBJECTS) $(DEPS) beat-off ./.obj
+
 
 beat-off: $(OBJECTS)
 	$(CC_FINAL) $(LFLAGS) -g -o beat-off $(OBJECTS) $(LIB)

@@ -65,9 +65,7 @@ int vamp_plugin_load(filter_t * filter){
     return 0;
 }
 
-static long rt_msec(RealTime rt){
-    return rt.sec * 1000 + rt.msec();
-}
+static long rt_msec(RealTime rt){return rt.sec * 1000 + rt.msec();}
 
 int vamp_plugin_update(filter_t * filter, chunk_pt chunk){
     // Returns number of events processed 
@@ -75,31 +73,23 @@ int vamp_plugin_update(filter_t * filter, chunk_pt chunk){
     int n_features = 0;
     int event_time;
     double event_value;
-
-    if(!plugin)
-        return 0;
-
+    if(!plugin) return 0;
     RealTime rt = RealTime::frame2RealTime(n_filtered_chunks*config.audio.chunk_size, config.audio.sample_rate);
     Plugin::FeatureSet features = plugin->process(&chunk, rt);
-
     for(vector<Plugin::Feature>::iterator it =features[filter->vamp_output].begin(); it != features[filter->vamp_output].end(); it++){
         if(it->hasTimestamp)
             event_time = rt_msec(it->timestamp);
         else
             event_time = rt_msec(rt);
-
         if(!it->values.empty())
             event_value = it->values.front();
         else
             event_value = 0.0;
-        
         filter->update(filter, event_time, event_value);
         n_features++;
     }
-
     return n_features;
 }
-
 void vamp_plugin_unload(filter_t * filter){
     Plugin * plugin = (Plugin *) filter->vamp_plugin;
     filter->vamp_plugin = 0;

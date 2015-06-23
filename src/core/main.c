@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <signal.h>
 
-#include "beat-off.h"
-
 #include <SDL/SDL_thread.h>
 #include <SDL/SDL_framerate.h>
 

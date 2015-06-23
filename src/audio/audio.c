@@ -48,8 +48,8 @@ static int audio_run(void* args) {
 void audio_start()
 {
     btrack_init(&btrack, config.audio.chunk_size, MAX(config.audio.frame_size,config.audio.chunk_size*4));
-//    timebase_init();
-//    waveform_init();
+    timebase_init();
+    waveform_init();
 
     audio_running = 1;
 
@@ -63,8 +63,8 @@ void audio_stop()
 
     SDL_WaitThread(audio_thread, 0);
 
-//    waveform_del();
-//    timebase_del();
+    waveform_del();
+    timebase_del();
     btrack_del(&btrack);
 }
 

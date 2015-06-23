@@ -1,4 +1,5 @@
 *.o
+.obj
 *.so
 *.d
 beat-off
@@ -11,3 +12,4 @@ beat-off
 *.deps
 *.dirstamp
 conf/layout.ini
+autom4te.cache

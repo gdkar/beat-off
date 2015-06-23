@@ -27,10 +27,8 @@ struct filter_lpf_agc_state {
 
 void filter_lpf_agc_update(filter_t * filter, mbeat_t t, double value){
     struct filter_lpf_agc_state * state = filter->state;
-
     double value_scaled = agc_update(&state->agc_state, t, value);
     double value_lpf = dema_update(&state->dema_state, t, value_scaled);
-
     param_output_set(&filter->output, (float) value_lpf);
 }
 
@@ -43,13 +41,9 @@ void filter_lpf_agc_init(filter_t * filter){
 void filter_beat_update(filter_t * filter, mbeat_t t_msec, double value)
 {
 
-    if(timebase_source == TB_AUTOMATIC){
-        timebase_tap(config.timebase.beat_btrack_alpha);
-    }
+    if(timebase_source == TB_AUTOMATIC){timebase_tap(config.timebase.beat_btrack_alpha);}
     waveform_add_beatline();
 }
-
-
 int n_filters = N_FILTERS;
 filter_t filters[N_FILTERS] = {
     {

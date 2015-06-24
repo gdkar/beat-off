@@ -53,7 +53,7 @@ PKG_CHECK_MODULES([FFTWF],[fftw3f],[
 AC_SUBST([SDL_ENABLED], ["no"])
 AS_IF([test "x$with_sdl" != "xno"], [
     found_sdl=yes
-    PKG_CHECK_MODULES([SDL], [sdl, SDL_ttf, SDL_gfx, SDL_image],[
+    PKG_CHECK_MODULES([SDL], [sdl SDL_ttf SDL_gfx SDL_image],[
       LIBS="$LIBS $SDL_LIBS"
       CPPFLAGS="$CFLAGS $SDL_CFLAGS"
     ],[found_sdl=no])

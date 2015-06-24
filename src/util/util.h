@@ -3,10 +3,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include <string.h>
 #include "util/asm.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
+#ifdef __cplusplus
+#include "util/murmur3_32_constexpr.hpp"
+#endif
+#include "util/MurmurHash3.h"
 inline uint64_t hashfn(uint64_t k){
   k ^= (k>> 31);
   k *= 0x7fb5d329728ea185;
@@ -105,7 +110,20 @@ static inline uint64_t threadrand_1024(){
   s0 ^=(s0 >> 30);
   return (s[ p ] = s0 ^ s1 ) * 1181783497276652981LL;
 }
+#ifndef __cplusplus
+static inline uint32_t hash(const char *const data)
+{
+  uint32_t out;
+  const uint32_t seed = 0;
+  MurmurHash3_x86_32(data, strlen(data), seed, &out);
+  return out;
+}
+#endif
 #ifdef __cplusplus
 };
+constexpr inline uint32_t hash(const char *const key ) noexcept
+{
+  return Murmur3_32(key,0);
+}
 #endif
 #endif

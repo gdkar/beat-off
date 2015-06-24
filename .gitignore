@@ -13,3 +13,5 @@ beat-off
 *.dirstamp
 conf/layout.ini
 autom4te.cache
+configure
+Makefile

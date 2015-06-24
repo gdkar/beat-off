@@ -47,7 +47,8 @@ static int audio_run(void* args) {
 
 void audio_start()
 {
-    btrack_init(&btrack, config.audio.chunk_size, MAX(config.audio.frame_size,config.audio.chunk_size*4));
+    btrack_init(&btrack, config.audio.chunk_size, MAX(config.audio.frame_size,config.audio.chunk_size*4),
+        44100, config.audio.odf_type );
     timebase_init();
     waveform_init();
 

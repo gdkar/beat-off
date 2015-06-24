@@ -41,6 +41,7 @@ CFGSECTION(audio,
     CFG(sample_rate, INT, 44100)
     CFG(chunk_size, INT, 128)
     CFG(frame_size, INT, 1024)
+    CFG(odf_type,INT, 7)
 )
 
 #undef CFGSECTION

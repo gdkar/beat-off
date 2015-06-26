@@ -7,3 +7,6 @@
 [submodule "xxHash"]
 	path = xxHash
 	url = git@github.com:Cyan4973/xxHash.git
+[submodule "stb_image"]
+	path = stb
+	url = git@github.com:nothings/stb.git

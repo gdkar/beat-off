@@ -4,5 +4,5 @@
 #include "audio/audio.h"
 
 int audio_pa_run(audio_callback_fn_pt callback, double sample_rate,  unsigned long chunk_size);
-
+int audio_pa_stop(void);
 #endif

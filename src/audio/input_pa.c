@@ -7,31 +7,24 @@
 #define NUM_CHANNELS 1
 #define PA_SAMPLE_TYPE paFloat32
 static float * chunk;
-
+static PaStream *stream = NULL;
 int audio_pa_callback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags, void *userData){
     audio_callback_fn_pt callback = (audio_callback_fn_pt) userData;
     memmove(chunk,input,sizeof(float)*frameCount);
-    if(callback(chunk))
-        return paAbort;
+    if(callback(chunk)) return paAbort;
     return paContinue;
 }
-
-
 int audio_pa_run(audio_callback_fn_pt callback, double sample_rate, unsigned long chunk_size){
     chunk = malloc(chunk_size * sizeof(float));
     if(!chunk) FAIL("Could not malloc audio chunk.\n");
-
     PaError err = Pa_Initialize();
     if(err != paNoError) FAIL("Could not initialize PortAudio\n");
-
     PaStreamParameters inputParameters;
     inputParameters.device = Pa_GetDefaultInputDevice();
     inputParameters.channelCount = NUM_CHANNELS;
     inputParameters.sampleFormat = PA_SAMPLE_TYPE;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultHighInputLatency ;
     inputParameters.hostApiSpecificStreamInfo = NULL;
-
-    PaStream *stream = NULL;
     err = Pa_OpenStream(&stream,
                         &inputParameters,
                         0,
@@ -44,10 +37,8 @@ int audio_pa_run(audio_callback_fn_pt callback, double sample_rate, unsigned lon
 
     err = Pa_StartStream(stream);
     if(err != paNoError) FAIL("Could not open audio input stream\n");
-
     /*
     printf("Gracefully terminated PortAudio\n");
-
     int cb_err = 0;
     while(cb_err == 0){
         err = Pa_ReadStream(stream, chunk, chunk_size );
@@ -58,4 +49,11 @@ int audio_pa_run(audio_callback_fn_pt callback, double sample_rate, unsigned lon
     free(chunk);
     */
     return 0;
+}
+int audio_pa_stop(){
+  PaError err = Pa_CloseStream(stream);
+  if(err!=paNoError)ERROR("%s",Pa_GetErrorText(err));
+  if(Pa_IsStreamActive(stream))Pa_AbortStream(stream);
+  Pa_Terminate();
+  return 0;
 }

@@ -1,6 +1,3 @@
-#include <ui/rect.h>
-#include <ui/item.h>
-
 extern "C"{
 #include <math.h>
 #include <stdio.h>
@@ -28,6 +25,7 @@ extern "C"{
 
 #include "util/perlin.h"
 };
+#include "ui/item.h"
 static void ui_done_callback()
 {
     output_stop();
@@ -40,6 +38,7 @@ void catch_sigterm(int sig)
 
 int main()
 {
+    XInitThreads();
     perlin_init();
 
     config_init(&config);
@@ -53,15 +52,10 @@ int main()
     colormap_test_all();
     colormap_set_global(&cm_rainbow_edged);
     colormap_set_mono(0.5);
-
+//    uic = ui_create_context(&layout);
     slots_init();
     pattern_init();
     patterns_updating = SDL_CreateMutex();
-    rectangle_group = RectangleGroup({std::make_pair(GL_GEOMETRY_SHADER,string("./assets/basic.geom")),
-                           std::make_pair(GL_VERTEX_SHADER,string("./assets/basic.vert")),
-                           std::make_pair(GL_FRAGMENT_SHADER,string("./assets/basic.frag"))});
-
-    rectangle_group.alsoBind(position_group);
     /*
      * fade > 100fps
      * full > 100fps

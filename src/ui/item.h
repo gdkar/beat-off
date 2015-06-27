@@ -1,67 +1,181 @@
 #pragma once
-
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <typeinfo>
-#include <unordered_map>
+#include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL.h>
 #include <vector>
+#include <unordered_set>
+#include <unordered_map>
+#include <array>
 #include <algorithm>
 #include <iterator>
-#include <utility>
 #include <memory>
 #include <atomic>
-#include <map>
 #include <thread>
-#include <array>
-#include "core/err.h"
-#include <glm/glm.hpp>
-
-#include "ui/vertexattrib.h"
+#include <chrono>
+#include <random>
+#include <functional>
+#include <utility>
+#include <sys/mman.h>
+#include <cstdlib>
+#include <cstddef>
+#include <cstdint>
+#include <unistd.h>
+#define poffsetof(type, field) \
+       ((void *) (&((type *) 0)->field))
 
 using namespace std;
-using namespace glm;
 
-struct PositionGroup{
-  VertexAttrib<float,2>         m_position;
-  VertexAttrib<float,2>         m_size;
-  VertexAttrib<float,1>         m_depth;
-  VertexAttrib<int,  1>         m_id;
-  vector<int>                   m_parent;
-  vector<array<float,2>>        m_relative_position;
-  std::unordered_map<int,int>   m_item_id;
-public:
-  struct virtual_entry {
-    array<float,2> &m_position;
-    array<float,2> &m_size;;
-    array<float,1> &m_depth;
-    array<int,  1> &m_id;;
-    int       &m_parent;
-    array<float,2>&m_relative_position;
-    virtual_entry(array<float,2>&pos, array<float,2> &size, array<float,1> &depth, array<int,1>&id, int &parent,array<float,2>&rel_pos)
-    : m_position(pos),m_size(size),m_depth(depth),m_id(id),m_parent(parent),m_relative_position(rel_pos){
-    }
-  };
-  explicit PositionGroup()
-    : m_position("a_position")
-    , m_size    ("a_size")
-    , m_depth   ("a_depth")
-    , m_id      ("a_id"){
+typedef struct vec2{
+  float x;float y;
+}vec2;
+typedef struct vec3{
+  float x; float y; float z;
+}vec3;
+typedef struct vec4{
+  float x; float y; float z; float w;
+}vec4;
+typedef struct item_gl_state{
+  vec4  a_bounds;
+  int   a_depth;
+  int   a_type;
+  int   a_index;
+  int   a_parent;
+  vec4  a_color;
+  vec4  a_user0;
+}item_gl_state; /* 64 bytes, one cache line */
+typedef struct item_aux_state{
+  vec2    m_rel_box;
+  size_t  m_priv_size;
+  void   *m_priv_data;
+}item_aux_state;
+
+
+struct batch_renderer{
+  GLuint            m_geom;
+  GLuint            m_vert;
+  GLuint            m_frag;
+  GLuint            m_prog;
+  vector<GLuint>    m_tex;
+  static GLuint   compileShader(GLenum type, const char *filename)
+  {
+    if(!filename) return 0;
+    FILE *ifile = fopen(filename,"r");
+    fseek(ifile,0,SEEK_END);
+    off_t size = ftell(ifile);
+    rewind(ifile);
+    char *source = (char*)malloc(size);
+    char *wptr = source;
+    do{
+      ssize_t chunk = fread(wptr, 1,(source+size-wptr),ifile);
+      if(chunk>0){
+        wptr += chunk;
+      }
+    }while(source+size > wptr);
+    fclose(ifile);
+    GLuint shader = glCreateShader(type);
+    glShaderSource(shader,1,(const GLchar**)&source,nullptr);
+    glCompileShader(shader);
+    GLint status;
+    char log[512];
+    glGetShaderiv(shader,GL_COMPILE_STATUS,&status);
+    fprintf(stderr,"Compilation of shader %s successful\n",status?"was":"wasn't");
+    glGetShaderInfoLog(shader,sizeof(log),NULL,log);
+    fprintf(stderr,"Shader compilation log:\n%s\n\n",log);
+    free(source);
+    return shader;
   }
-  virtual_entry at(int item_id ){
-    int index;
-    if(!m_item_id.count(item_id)){
-      index = m_position.size();
-      array<float,2> tmp;;
-      m_position.emplace_back(tmp);
-      m_size.emplace_back(tmp);
-      m_depth.resize(index+1);
-      m_id.resize(index+1);
-      m_parent.resize(index+1);
-      m_relative_position.push_back(tmp);
-      m_item_id.insert(make_pair(item_id,index));
+  explicit batch_renderer(const char *geom = nullptr,const char *vert = nullptr,const char *frag = nullptr){
+    m_geom = compileShader(GL_GEOMETRY_SHADER,geom);
+    m_vert = compileShader(GL_VERTEX_SHADER,vert);
+    m_frag = compileShader(GL_FRAGMENT_SHADER, frag);
+    m_prog = glCreateProgram();
+    glAttachShader(m_prog,m_vert);
+    glAttachShader(m_prog,m_geom);
+    glAttachShader(m_prog,m_frag);
+    glBindFragDataLocation(m_prog,0,"f_out");
+    glLinkProgram(m_prog);
+  }
+  virtual ~batch_renderer(){
+    glDeleteProgram(m_prog);
+    glDeleteShader(m_frag);
+    glDeleteShader(m_vert);
+    glDeleteShader(m_geom);
+  }
+  virtual void  update();
+};
+struct renderer_registry{
+  ui_context             *m_context;
+  vector<item_gl_state>   m_gl_state;
+  vector<item_aux_state>  m_aux_state;
+  unordered_map<int,int>  m_id_to_index;
+  GLuint                  m_vao;
+  GLuint                  m_ibo;
+  GLuint                  m_vbo;
+  GLuint                  m_fbo;
+  GLuint                  m_fbo_hit;
+  vector<batch_renderer>  m_render_types;
+  renderer_registry( ui_context *ctx)
+  :m_context(ctx) 
+  {
+//    SDL_GL_MakeCurrent(m_context->window,m_context->context);
+    glGenVertexArrays(1, &m_vao);
+    glBindVertexArray(m_vao);
+    glGenBuffers(1,&m_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER,m_vbo);
+  }
+  void uploadState()
+  {
+    if(m_gl_state.size()){
+      glBindVertexArray(m_vao);
+      glBindBuffer(GL_ARRAY_BUFFER,m_vbo);
+      glBufferData(GL_ARRAY_BUFFER, m_gl_state.size()*sizeof(m_gl_state[0]),&m_gl_state[0], GL_STREAM_DRAW);
     }
-    index = m_item_id[item_id];
-    return virtual_entry(m_position[index],m_size[index],m_depth[index],m_id[index],m_parent[index],m_relative_position[index]);
+
+  }
+  void bindRenderer(batch_renderer &br)
+  {
+    glUseProgram(br.m_prog);
+    GLuint location;
+    location = glGetAttribLocation(br.m_prog,"a_bounds");
+    glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE,
+        sizeof(item_gl_state),poffsetof(item_gl_state,a_bounds));
+    glEnableVertexAttribArray(location);
+    glVertexAttribDivisor(location,0);
+
+    location = glGetAttribLocation(br.m_prog,"a_depth");
+    glVertexAttribPointer(location, 1, GL_INT, GL_FALSE,
+        sizeof(item_gl_state),poffsetof(item_gl_state,a_depth));
+    glEnableVertexAttribArray(location);
+    glVertexAttribDivisor(location,0);
+
+    location = glGetAttribLocation(br.m_prog,"a_type");
+    glVertexAttribPointer(location, 1, GL_INT, GL_FALSE,
+        sizeof(item_gl_state),poffsetof(item_gl_state,a_type));
+    glEnableVertexAttribArray(location);
+    glVertexAttribDivisor(location,0);
+
+    location = glGetAttribLocation(br.m_prog,"a_index");
+    glVertexAttribPointer(location, 1, GL_INT, GL_FALSE,
+        sizeof(item_gl_state),poffsetof(item_gl_state,a_index));
+    glEnableVertexAttribArray(location);
+    glVertexAttribDivisor(location,0);
+
+    location = glGetAttribLocation(br.m_prog,"a_parent");
+    glVertexAttribPointer(location, 1, GL_INT, GL_FALSE,
+        sizeof(item_gl_state),poffsetof(item_gl_state,a_parent));
+    glEnableVertexAttribArray(location);
+    glVertexAttribDivisor(location,0);
+
+    location = glGetAttribLocation(br.m_prog,"a_color");
+    glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE,
+        sizeof(item_gl_state),poffsetof(item_gl_state,a_color));
+    glEnableVertexAttribArray(location);
+    glVertexAttribDivisor(location,0);
+
+    location = glGetAttribLocation(br.m_prog,"a_user0");
+    glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE,
+        sizeof(item_gl_state),poffsetof(item_gl_state,a_user0));
+    glEnableVertexAttribArray(location);
+    glVertexAttribDivisor(location,0);
   }
 };
-extern PositionGroup position_group;

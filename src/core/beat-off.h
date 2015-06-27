@@ -8,7 +8,7 @@ extern "C"{
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <GL/glut.h>
-
+#include <GL/glx.h>
 #include "util/math.h"
 #include "core/err.h"
 #include "core/config.h"
@@ -25,6 +25,12 @@ extern "C"{
 #include "util/util.h"
 #include <stdbool.h>
 #include "util/tinycthread.h"
+
+
+
+#define TYPED_ALLOC(x,n) do{(x) = (__typeof__(x))calloc(sizeof(*x),1);}while(0)
+#define TYPED_REALLOC(x,n) ((__typeof__(x))realloc((x),n*sizeof(*x)))
+
 #ifndef __cplusplus
 #include <stdatomic.h>
 #else 

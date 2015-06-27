@@ -23,8 +23,8 @@ extern struct xy mouse_drag_delta;
 extern void (*mouse_drag_fn_p)();
 extern void (*mouse_drop_fn_p)();
 
-__attribute__((unused)) static void ui_start(void (*ui_done)()){}
-__attribute__((unused)) static void ui_stop(){}
+void ui_start(void (*ui_done)());
+void ui_stop();
 
 #define HANDLED 1
 #define UNHANDLED 0

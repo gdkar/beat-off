@@ -6,8 +6,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_ttf.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "core/config_macros.h"
 #include "core/config_color.h"
 #include "core/config.h"
@@ -25,26 +25,33 @@
 
 #define CFG(n, type, def) type n;
 
+#define CFG_RECT_ATTR(n, dx, dy, dw, dh) \
+    CFG(PREFIX(n, x), INT, dx) \
+    CFG(PREFIX(n, y), INT, dy) \
+    CFG(PREFIX(n, w), INT, dw) \
+    CFG(PREFIX(n, h), INT, dh) 
+
+typedef SDL_Rect rect_t;
+
 struct image {
     char * filename;
-    SDL_Surface * surface;
+    SDL_Texture * texture;
     int error;
 };
-
 static inline struct image _parse_image(const char * str){
     struct image image = {0, 0, 0};
     image.filename = strdup(str);
     return image;
 }
-
 #define IMAGE struct image
 #define IMAGE_PARSE(x) _parse_image(x)
 #define IMAGE_FORMAT(x) "%s", x.filename
-#define IMAGE_FREE(x) free(x.filename); SDL_FreeSurface(x.surface);
+#define IMAGE_FREE(x) free(x.filename);
 #define IMAGE_PREP(x) _parse_image(x)
 
 #define CFG_XY_ATTR(n, dx, dy) \
     CFG(PREFIX(n, x), SINT16, dx) CFG(PREFIX(n, y), SINT16, dy)
+
 struct xy {
     CFG_XY_ATTR(,,)
 };
@@ -65,22 +72,27 @@ struct txt {
     } ui_font;
 };
 
-#define CFG_RECT_ATTR(n, dx, dy, dw, dh) \
-    CFG(PREFIX(n, x), SINT16, dx) \
-    CFG(PREFIX(n, y), SINT16, dy) \
-    CFG(PREFIX(n, w), UINT16, dw) \
-    CFG(PREFIX(n, h), UINT16, dh) 
+#define CFG_SLIDER_ATTR(n, dx, dy, dw, dh, dweight, dsize, dcolor)\
+  CFG_RECT_ATTR(n,dx,dy,dw,dh)\
+  CFG(PREFIX(n,weight),INT,dweight)\
+  CFG(PREFIX(n,size),INT,dsize)\
+  CFG(PREFIX(n,color),COLOR,dcolor)\
 
-
-typedef SDL_Rect rect_t;
-
+struct slider{
+  CFG_SLIDER_ATTR(,,,,,,,)
+    struct{
+      parameter_t    *param;
+      param_state_t  *state;
+      param_output_t *output;
+    }state;
+};
 #define CFG_RECT_ARRAY_ATTR(n, dx, dy, dw, dh, dpx, dpy, dtile) \
-    CFG(PREFIX(n, x), SINT16, dx) \
-    CFG(PREFIX(n, y), SINT16, dy) \
-    CFG(PREFIX(n, w), UINT16, dw) \
-    CFG(PREFIX(n, h), UINT16, dh) \
-    CFG(PREFIX(n, px), UINT16, dpx) \
-    CFG(PREFIX(n, py), UINT16, dpy) \
+    CFG(PREFIX(n, x), INT, dx) \
+    CFG(PREFIX(n, y), INT, dy) \
+    CFG(PREFIX(n, w), INT, dw) \
+    CFG(PREFIX(n, h), INT, dh) \
+    CFG(PREFIX(n, px), INT, dpx) \
+    CFG(PREFIX(n, py), INT, dpy) \
     CFG(PREFIX(n, tile), INT, dtile)
 
 struct rect_array {
@@ -138,7 +150,12 @@ static inline void rect_origin(const rect_t * src, rect_t * dst){
     dst->w = src->w;
     dst->h = src->h;
 }
-
+static inline void rect_relative(const rect_t *src, const rect_t *loc, rect_t *dst){
+  dst->x = src->x + loc->x;
+  dst->y = src->y + loc->y;
+  dst->w = loc->w;
+  dst->h = loc->h;
+}
 // Creates a copy of a `rect`
 static inline void rect_copy(rect_t * dst, const rect_t * src){
     memcpy(dst, src, sizeof(rect_t));
@@ -174,9 +191,9 @@ static inline struct xy xy_sub(struct xy a, struct xy b){
     return result;
 }
 
-SDL_Surface * image_load(struct image * image);
-void fill_background(SDL_Surface * surface, rect_t * rect, struct background * bg);
-
+SDL_Texture  * image_load(struct image * image);
+void fill_background(rect_t * rect, struct background * bg);
+void fill_rect(rect_t *rect, SDL_Color* color);
 extern struct layout layout;
 
 #endif

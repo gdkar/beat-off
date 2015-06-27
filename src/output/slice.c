@@ -1,4 +1,4 @@
-#include <SDL/SDL_thread.h>
+#include <SDL2/SDL_thread.h>
 
 #include "core/err.h"
 #include "core/slot.h"

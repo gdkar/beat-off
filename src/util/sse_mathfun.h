@@ -55,17 +55,19 @@
 # define ALIGN16_END __attribute__((aligned(16)))
 /* __m128 is ugly to write */
 typedef __m128 v4sf;  // vector of 4 float (sse1)
-
-# include <emmintrin.h>
 typedef __m128i v4si; // vector of 4 int (sse2)
 
+
 /* declare some SSE constants -- why can't I figure a better way to do that? */
-#define _PS_CONST(Name, Val)                                            \
-  static const ALIGN16_BEG float _ps_##Name[4] ALIGN16_END = { Val, Val, Val, Val }
-#define _PI32_CONST(Name, Val)                                            \
-  static const ALIGN16_BEG int _pi32_##Name[4] ALIGN16_END = { Val, Val, Val, Val }
-#define _PS_CONST_TYPE(Name, Type, Val)                                 \
-  static const ALIGN16_BEG Type _ps_##Name[4] ALIGN16_END = { Val, Val, Val, Val }
+#define _PS_CONST(Name, Val)                              \
+  static const ALIGN16_BEG float _ps_##Name[4] ALIGN16_END \
+      = { (float)Val, (float)Val, (float)Val, (float)Val }
+#define _PI32_CONST(Name, Val)                            \
+  static const ALIGN16_BEG int _pi32_##Name[4] ALIGN16_END \
+      = { (int)Val, (int)Val, (int)Val, (int)Val }
+#define _PS_CONST_TYPE(Name, Type, Val)                   \
+  static const ALIGN16_BEG Type _ps_##Name[4] ALIGN16_END \
+      = { (Type)Val, (Type)Val, (Type)Val, (Type)Val }
 
 _PS_CONST(1  , 1.0f);
 _PS_CONST(0p5, 0.5f);
@@ -126,8 +128,8 @@ static inline v4sf log_ps(v4sf x) {
   v4sf mask = _mm_cmplt_ps(x, *(const v4sf*)_ps_cephes_SQRTHF);
   v4sf tmp = _mm_and_ps(x, mask);
   x = _mm_sub_ps(x, one);
-  e = _mm_sub_ps(e, _mm_and_ps(one, mask));
   x = _mm_add_ps(x, tmp);
+  e = _mm_sub_ps(e, _mm_and_ps(one, mask));
 
 
   v4sf z = _mm_mul_ps(x,x);
@@ -277,14 +279,14 @@ _PS_CONST(cephes_PIO4, 7.85398163397448309616E-1);
    deliver full speed.
 */
 static inline v4sf sin_ps(v4sf x) { // any x
-  v4sf xmm1, xmm2 = _mm_setzero_ps(), xmm3, sign_bit, y;
+  v4sf xmm1, xmm2 = _mm_setzero_ps(), xmm3, y;
 
   v4si emm0, emm2;
-  sign_bit = x;
+  /* extract the sign bit (upper one) */
+  v4sf sign_bit = _mm_and_ps(x, *(const v4sf*)_ps_sign_mask);
+
   /* take the absolute value */
   x = _mm_and_ps(x, *(const v4sf*)_ps_inv_sign_mask);
-  /* extract the sign bit (upper one) */
-  sign_bit = _mm_and_ps(sign_bit, *(const v4sf*)_ps_sign_mask);
   
   /* scale by 4/Pi */
   y = _mm_mul_ps(x, *(const v4sf*)_ps_cephes_FOPI);
@@ -556,11 +558,11 @@ _PS_CONST(approx_atan2_c0,0.1963f);
 _PS_CONST(approx_atan2_c1,-0.9817f);
 static inline v4sf _approx_atan2_ps ( v4sf y, v4sf x )
 {
-  v4sf sign_bit_x = _mm_and_ps(x, *(const v4sf*)_ps_sign_mask);
-  v4sf absx       = _mm_and_ps(x, *(const v4sf*)_ps_inv_sign_mask);
-  v4sf sign_bit_y = _mm_and_ps(y, *(const v4sf*)_ps_sign_mask);
-  v4sf absy       = _mm_and_ps(y,*(const v4sf*)_ps_inv_sign_mask);
-  v4sf angle = _approx_div_ps(_mm_sub_ps(absx,absy),_mm_add_ps(absx,absy));
+  const v4sf sign_bit_x = _mm_and_ps(x, *(const v4sf*)_ps_sign_mask);
+  const v4sf absx       = _mm_and_ps(x, *(const v4sf*)_ps_inv_sign_mask);
+  const v4sf sign_bit_y = _mm_and_ps(y, *(const v4sf*)_ps_sign_mask);
+  const v4sf absy       = _mm_and_ps(y,*(const v4sf*)_ps_inv_sign_mask);
+  const v4sf angle = _approx_div_ps(_mm_sub_ps(absx,absy),_mm_add_ps(absx,absy));
   v4sf angle2= _mm_mul_ps(angle,angle);
        angle2= _mm_mul_ps(*(const v4sf*)_ps_approx_atan2_c0,angle2); 
        angle2= _mm_add_ps(angle2,*(const v4sf*)_ps_approx_atan2_c1);
@@ -573,9 +575,10 @@ static inline v4sf _approx_atan2_ps ( v4sf y, v4sf x )
 static inline v4sf _mm_abs_ps ( v4sf x ){return   _mm_and_ps(x, *(const v4sf*)_ps_inv_sign_mask);}
 static inline v4sf _mm_hypot_ps( v4sf real,v4sf imag)
 {
-  return _approx_sqrt_ps ( _mm_add_ps ( _mm_mul_ps ( real, real ),
-                                         _mm_mul_ps ( imag, imag ) ) );
-
+  const v4sf r2 = _mm_mul_ps(real,real);
+  const v4sf i2 = _mm_mul_ps(imag,imag);
+  const v4sf i2_plus_r2 = _mm_add_ps ( i2, r2 );
+  return _approx_sqrt_ps ( i2_plus_r2 );
 }
 static inline void _approx_magphase_ps (v4sf *mag, v4sf *phase, v4sf real, v4sf imag){
   *phase = _approx_atan2_ps(imag,real);

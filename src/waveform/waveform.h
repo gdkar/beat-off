@@ -4,15 +4,18 @@
 #include "audio/audio.h"
 #include "core/parameter.h"
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #define WAVEFORM_HISTORY_SIZE 2048
+#define WAVEFORM_HISTORY_MASK (WAVEFORM_HISTORY_SIZE-1)
 
+_Static_assert((WAVEFORM_HISTORY_SIZE)&&!(WAVEFORM_HISTORY_SIZE&(WAVEFORM_HISTORY_SIZE-1)),"Waveform size must be a power of 2.");
 struct waveform_bin {
     SDL_Color color;
     param_output_t output;
     float attenuation;
-    int hptr;
+    long hptr;
+    long last_hptr;
     float history[WAVEFORM_HISTORY_SIZE];
 };
 

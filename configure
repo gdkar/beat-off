@@ -4275,39 +4275,19 @@ fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$GLEW_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (glew) were not met:
-
-$GLEW_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables GLEW_CFLAGS
-and GLEW_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
+	as_fn_error $? "\"unable to find package GLEW\"" "$LINENO" 5
 elif test $pkg_failed = untried; then
      	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables GLEW_CFLAGS
-and GLEW_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
+	as_fn_error $? "\"unable to find package GLEW\"" "$LINENO" 5
 else
 	GLEW_CFLAGS=$pkg_cv_GLEW_CFLAGS
 	GLEW_LIBS=$pkg_cv_GLEW_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 
-  LIBS="$LIBS $GLEW_LIBS"
-  CPPFLAGS="$CPPFLAGS $GLEW_CFLAGS"
+  LIBS="$LIBS $GLEW_LIBS $GLEW_STATIC_LIBS"
+  CPPFLAGS="$CPPFLAGS $GLEW_CFLAGS $GLEW_STATIC_CFLAGS"
 
 fi
 
@@ -4369,31 +4349,11 @@ fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$GLFW_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (glfw3) were not met:
-
-$GLFW_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables GLFW_CFLAGS
-and GLFW_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
+	as_fn_error $? "\"Unable to find GLFW3\"" "$LINENO" 5
 elif test $pkg_failed = untried; then
      	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables GLFW_CFLAGS
-and GLFW_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
+	as_fn_error $? "\"Unable to find GLFW3\"" "$LINENO" 5
 else
 	GLFW_CFLAGS=$pkg_cv_GLFW_CFLAGS
 	GLFW_LIBS=$pkg_cv_GLFW_LIBS
@@ -4567,12 +4527,12 @@ if test -n "$SDL_CFLAGS"; then
     pkg_cv_SDL_CFLAGS="$SDL_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"sdl SDL_ttf SDL_gfx SDL_image\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "sdl SDL_ttf SDL_gfx SDL_image") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"sdl2 SDL2_ttf SDL2_gfx SDL2_image SDL2_mixer \""; } >&5
+  ($PKG_CONFIG --exists --print-errors "sdl2 SDL2_ttf SDL2_gfx SDL2_image SDL2_mixer ") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_SDL_CFLAGS=`$PKG_CONFIG --cflags "sdl SDL_ttf SDL_gfx SDL_image" 2>/dev/null`
+  pkg_cv_SDL_CFLAGS=`$PKG_CONFIG --cflags "sdl2 SDL2_ttf SDL2_gfx SDL2_image SDL2_mixer " 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4584,12 +4544,12 @@ if test -n "$SDL_LIBS"; then
     pkg_cv_SDL_LIBS="$SDL_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"sdl SDL_ttf SDL_gfx SDL_image\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "sdl SDL_ttf SDL_gfx SDL_image") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"sdl2 SDL2_ttf SDL2_gfx SDL2_image SDL2_mixer \""; } >&5
+  ($PKG_CONFIG --exists --print-errors "sdl2 SDL2_ttf SDL2_gfx SDL2_image SDL2_mixer ") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_SDL_LIBS=`$PKG_CONFIG --libs "sdl SDL_ttf SDL_gfx SDL_image" 2>/dev/null`
+  pkg_cv_SDL_LIBS=`$PKG_CONFIG --libs "sdl2 SDL2_ttf SDL2_gfx SDL2_image SDL2_mixer " 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4610,9 +4570,9 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        SDL_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "sdl SDL_ttf SDL_gfx SDL_image" 2>&1`
+	        SDL_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "sdl2 SDL2_ttf SDL2_gfx SDL2_image SDL2_mixer " 2>&1`
         else
-	        SDL_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "sdl SDL_ttf SDL_gfx SDL_image" 2>&1`
+	        SDL_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "sdl2 SDL2_ttf SDL2_gfx SDL2_image SDL2_mixer " 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$SDL_PKG_ERRORS" >&5
@@ -4642,8 +4602,7 @@ $as_echo "#define SDL_ENABLED 1" >>confdefs.h
 
 else
 
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"Unable to find SDL libraries! Compiling without SDL support!\"" >&5
-$as_echo "$as_me: WARNING: \"Unable to find SDL libraries! Compiling without SDL support!\"" >&2;}
+        as_fn_error $? "\"Unable to find SDL libraries! Compiling without SDL support!\"" "$LINENO" 5
 
 fi
 

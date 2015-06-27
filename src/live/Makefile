@@ -26,7 +26,7 @@ INC  = -I.. -L/usr/local/lib -L/usr/lib
 LIB  = -lm -lSDL
 
 # Assembler, compiler, and linker flags
-CFLAGS  = -g -O3 $(INC) -Wall -Wextra -Werror -std=c99 -fPIC -DSHAREDLIB
+CFLAGS  = -g -O3 $(INC) -Wall -Wextra -Werror -std=gnu11 -fPIC -DSHAREDLIB
 
 -include $(DEPS)
 %.d : %.c

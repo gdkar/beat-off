@@ -1,9 +1,9 @@
 #include <portmidi.h>
 #include <string.h>
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_thread.h>
-#include <SDL/SDL_timer.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_thread.h>
+#include <SDL2/SDL_timer.h>
 
 #include "core/err.h"
 #include "core/config.h"
@@ -218,7 +218,7 @@ void midi_start()
 {
     midi_running = 1;
 
-    midi_thread = SDL_CreateThread(&midi_run, 0);
+    midi_thread = SDL_CreateThread(&midi_run,"Midi Thread", 0);
     if(!midi_thread) FAIL("Could not create MIDI thread: %s\n",SDL_GetError());
 }
 

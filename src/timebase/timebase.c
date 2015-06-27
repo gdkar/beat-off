@@ -1,7 +1,7 @@
 #include "timebase/timebase.h"
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_thread.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_thread.h>
 
 #include "waveform/waveform.h"
 #include "audio/audio.h"

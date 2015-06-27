@@ -2,7 +2,7 @@
 #define __UI_WAVEFORM_H__
 
 #include "waveform/waveform.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 extern SDL_Surface* waveform_surface;
 

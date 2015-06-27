@@ -1,7 +1,7 @@
 #ifndef __PARAMETER_H
 #define __PARAMETER_H
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 // ---- param_state ----
 

@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <SDL/SDL_thread.h>
-#include <SDL/SDL_timer.h>
-#include <SDL/SDL_framerate.h>
+#include <SDL2/SDL_thread.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL2_framerate.h>
 
 #include "core/err.h"
 #include "core/slot.h"

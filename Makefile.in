@@ -10,10 +10,10 @@ PREFIX = @prefix@
 
 # Files to include
 C_SRC  = $(wildcard src/core/*.c)
-CPP_SRC  = $(wildcard src/entity/*.cpp)
-C_SRC += $(wildcard src/entity/*.c)
-C_SRC += $(wildcard src/types/*.c)
-CPP_SRC += $(wildcard src/types/*.cpp)
+CPP_SRC  = $(wildcard src/core/*.cpp)
+CPP_SRC += $(wildcard src/item/*.cpp)
+C_SRC += $(wildcard src/cgame/*.c)
+CPP_SRC += $(wildcard src/cgame/*.cpp)
 C_SRC += $(wildcard src/audio/*.c)
 C_SRC += $(wildcard src/dynamic/*.c)
 C_SRC += $(wildcard src/lib/*.c)
@@ -27,7 +27,7 @@ C_SRC += $(wildcard src/util/*.c)
 CPP_SRC += $(wildcard src/util/*.cpp)
 C_SRC += $(wildcard src/waveform/*.c)
 C_SRC += $(wildcard BTrack/src/*.c)
-
+C_SRC += $(wildcard xxHash/*.c)
 
 ifeq (@VAMP_ENABLED@,yes)
 C_SRC += $(wildcard src/filters/*.c)
@@ -40,6 +40,7 @@ endif
 
 ifeq (@SDL_ENABLED@,yes)
 C_SRC += $(wildcard src/ui/*.c)
+CPP_SRC += $(wildcard src/ui/*.cpp)
 endif
 
 ifeq (@FLUX_ENABLED@,yes)
@@ -57,11 +58,11 @@ OBJECTS = $(patsubst %.c,.obj/%.o,$(C_SRC))
 OBJECTS += $(patsubst %.cpp,.obj/%.o,$(CPP_SRC))
 DEPS = $(OBJECTS:.o=.d)
 
-INC  = -I./src/ -I./BTrack/src/
-LIB  = -L/usr/local/lib -L/usr/lib @LIBS@ -lGLEW -lglfw3
+INC  = -I./src/ -I./BTrack/src/ -I./xxHash/
+LIB  = -L/usr/local/lib -L/usr/lib @LIBS@ $(shell pkg-config --libs --static glfw3 luajit)
 
 # Assembler, compiler, and linker flags
-OPTFLAGS +=  -Ofast 
+OPTFLAGS +=   -g -ggdb
 OPTFLAGS += -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wno-unused-parameter -Wuninitialized -Werror -Wno-array-bounds  -march=native -g -ggdb
 #OPTFLAGS += -funsafe-loop-optimizations -Wunsafe-loop-optimizations -ffast-math 
 OPTFLAGS += -DTEXT_ANTIALIAS -DGRAPH_ANTIALIAS -D_BSD_SOURCE -D_GNU_SOURCE -DPOSIX_C_SOURCE=200112
@@ -72,9 +73,12 @@ LFLAGS  = $(LIB) @LDFLAGS@
 
 #DEBUG=DEBUG
 ifdef DEBUG
-	CXXFLAGS += -fstack-protector -fsanitize=address -g -Og
-	CFLAGS += -fstack-protector -fsanitize=address -g -Og
-	LIB += -lasan
+	CXXFLAGS += -fstack-protector -g  -ggdb -O0
+	CFLAGS += -fstack-protector -g  -ggdb -O0
+	LIB += -L/usr/lib/x86_64-linux-gnu -ltasn1
+else
+	CXXFLAGS += -Ofast
+	CFLAGS   += -Ofast
 endif
 
 -include $(DEPS)

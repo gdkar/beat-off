@@ -7,7 +7,7 @@
 
 #include <math.h>
 #include <string.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #define WF_LOW_COLOR {10, 10, 60, 255} // dark blue
 #define WF_MID_COLOR {30, 40, 110, 255} // blue
@@ -56,6 +56,7 @@ void waveform_init(){
     for(int i = 0; i < N_WF_BINS; i++){
         memset(waveform_bins[i].history, 0, sizeof(WAVEFORM_HISTORY_SIZE * sizeof(float)));
         waveform_bins[i].hptr = 0;
+        waveform_bins[i].last_hptr = 0;
         param_output_init(&waveform_bins[i].output, 0.);
     }
     memset(beat_bin.history, 0, sizeof(WAVEFORM_HISTORY_SIZE * sizeof(float)));
@@ -63,16 +64,9 @@ void waveform_init(){
 }
 
 static inline void waveform_bin_update(struct waveform_bin * bin, float value){
-
-    if(bin->hptr >= WAVEFORM_HISTORY_SIZE)
-        bin->hptr = 0;
-    bin->history[bin->hptr++] = value;
+    bin->history[(bin->hptr++)&WAVEFORM_HISTORY_MASK] = value;
 }
-
-void waveform_add_beatline(){
-    beat_lines[0] |= 1;
-}
-
+void waveform_add_beatline(){beat_lines[0] |= 1;}
 void waveform_update(const chunk_pt chunk){
     //const float alpha = 0.98;
 
@@ -121,14 +115,11 @@ void waveform_update(const chunk_pt chunk){
        
         //vlow = MAX(vlow, fabs( (chunk[i] - slow * LA2) * LB1 + slow * LB2) * LN);
         //slow = chunk[i] - slow * LA2;
-
         slow = LA2 * slow + (1. - LA2) * chunk[i];
         //vlow = MAX(vlow, fabs(slow));
         vlow = L2A2 * vlow + (1.0 - L2A2) * fabs(slow);
-
         //shigh = - shigh * alpha + chunk[i] * (1 - alpha);
         //vhigh = MAX(vhigh, fabs(shigh));
-        
         //vhigh = MAX(vhigh, fabs( (chunk[i] - shigh * HA2) * HB1 + shigh * HB2) * HN);
         vhigh = H2A2 * vhigh + (1.0 - H2A2) * fabs(((chunk[i] - shigh * HA2) * HB1 + shigh * HB2) * HN);
         shigh = chunk[i] - shigh * HA2;
@@ -150,15 +141,12 @@ void waveform_update(const chunk_pt chunk){
     waveform_bin_update(&waveform_bins[WF_MID], (vhigh + vmid)/attenuation);
     waveform_bin_update(&waveform_bins[WF_HIGH], (vhigh)/attenuation);
     waveform_bin_update(&beat_bin, MB2B(timebase_get() % 1000));
-
     qlow = LC1 * qlow + (1. - LC1) * vlow;
     qmid = MC1 * qmid + (1. - MC1) * vmid;
     qhigh = HC1 * qhigh + (1. - HC1) * vhigh;
-
     param_output_set(&waveform_bins[WF_LOW].output, MIN(qlow * 2., 1.));
     param_output_set(&waveform_bins[WF_MID].output, MIN(qmid * 2., 1.));
     param_output_set(&waveform_bins[WF_HIGH].output, MIN(qhigh * 2., 1.));
-
     memmove(beat_lines + 1, beat_lines, (WAVEFORM_HISTORY_SIZE - 1) * sizeof(char));
     beat_lines[0] = 0;
 }

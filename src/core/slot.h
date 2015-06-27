@@ -1,7 +1,7 @@
 #ifndef __SLOT_H
 #define __SLOT_H
 
-#include <SDL/SDL_mutex.h>
+#include <SDL2/SDL_mutex.h>
 
 #include "core/parameter.h"
 #include "patterns/pattern.h"

@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "util/color.h"
 #include "util/math.h"

@@ -4,7 +4,7 @@
 #include <portmidi.h>
 #include "core/parameter.h"
 #include "core/slot.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include <portmidi.h>
 
 #define SDL_MIDI_COMMAND_EVENT (SDL_USEREVENT)

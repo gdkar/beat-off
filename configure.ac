@@ -34,13 +34,13 @@ AC_SEARCH_LIBS([Pa_Initialize], [portaudio], [], [
 #AC_SEARCH_LIBS([Pa_ReadStream], [portaudio], [], [
 #    AC_MSG_ERROR([unable to find the Pa_ReadStream() function])])
 PKG_CHECK_MODULES([GLEW], [glew],[
-  LIBS="$LIBS $GLEW_LIBS"
-  CPPFLAGS="$CPPFLAGS $GLEW_CFLAGS"
-])
+  LIBS="$LIBS $GLEW_LIBS $GLEW_STATIC_LIBS"
+  CPPFLAGS="$CPPFLAGS $GLEW_CFLAGS $GLEW_STATIC_CFLAGS"
+  ],[AC_MSG_ERROR(["unable to find package GLEW"])])
 PKG_CHECK_MODULES([GLFW], [glfw3],[
   LIBS="$LIBS $GLFW_LIBS"
   CPPFLAGS="$CPPFLAGS $GLFW_CFLAGS"
-])
+  ],[AC_MSG_ERROR(["Unable to find GLFW3"])])
 PKG_CHECK_MODULES([SRC],[samplerate],[
   CPPFLAGS="$CFLAGS $SRC_CFLAGS"
   LIBS="$LIBS $SRC_LIBS"
@@ -53,7 +53,7 @@ PKG_CHECK_MODULES([FFTWF],[fftw3f],[
 AC_SUBST([SDL_ENABLED], ["no"])
 AS_IF([test "x$with_sdl" != "xno"], [
     found_sdl=yes
-    PKG_CHECK_MODULES([SDL], [sdl SDL_ttf SDL_gfx SDL_image],[
+    PKG_CHECK_MODULES([SDL], [sdl2 SDL2_ttf SDL2_gfx SDL2_image SDL2_mixer ],[
       LIBS="$LIBS $SDL_LIBS"
       CPPFLAGS="$CFLAGS $SDL_CFLAGS"
     ],[found_sdl=no])
@@ -73,7 +73,7 @@ dnl    ],[found_sdl=no])
         AC_DEFINE([SDL_ENABLED], [1], [SDL UI is enabled])
         AC_SUBST([SDL_ENABLED], ["yes"])
     ], [
-        AC_WARN(["Unable to find SDL libraries! Compiling without SDL support!"])
+        AC_ERROR(["Unable to find SDL libraries! Compiling without SDL support!"])
     ])
 ])
 

@@ -2,7 +2,7 @@
 #define __SLICE_H
 
 #include "core/slot.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 enum output_bus {
     OUTPUT_FLUX = 1,

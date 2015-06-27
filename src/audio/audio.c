@@ -7,8 +7,8 @@
 #include "timebase/timebase.h"
 #include "BTrack.h"
 
-#include <SDL/SDL_thread.h>
-#include <SDL/SDL_timer.h>
+#include <SDL2/SDL_thread.h>
+#include <SDL2/SDL_timer.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,7 +44,7 @@ void audio_start(){
     timebase_init();
     waveform_init();
     audio_running = 1;
-    audio_thread = SDL_CreateThread(&audio_run, 0);
+    audio_thread = SDL_CreateThread(&audio_run,"Audio Thread", 0);
     if(!audio_thread) FAIL("Could not create output thread: %s\n",SDL_GetError());
 }
 

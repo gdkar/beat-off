@@ -10,7 +10,7 @@ struct filter;
 #include "core/parameter.h"
 #include "core/time.h"
 #include "ui/graph.h"
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 typedef void * filter_state_pt;
 typedef void * vamp_plugin_p;

@@ -22,6 +22,6 @@ void graph_create_filter(graph_state_t* state);
 void graph_remove(graph_state_t* state);
 
 void graph_update(graph_state_t* state, float value);
-void graph_render(graph_state_t* state, struct background * bg, SDL_Color line_color);
+void graph_render(SDL_Surface *onto, rect_t *where, graph_state_t* state, struct background * bg, SDL_Color line_color);
 
 #endif

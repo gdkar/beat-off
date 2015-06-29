@@ -33,11 +33,6 @@
     X(master_preview, layout.master) \
     X(pattern_preview, layout.slot.preview_rect) \
     X(pattern_pane, layout.add_pattern) \
-    X(signal_pane, layout.signal) \
-    X(filter_pane, layout.filter) \
-    X(output_pane, layout.output) \
-    X(palette_pane, layout.palette) \
-    X(palette_preview, layout.palette.preview_rect) \
     X(state_panel_pane, layout.state_panel) \
     X(state_save_pane, layout.state_save) \
     X(state_load_pane, layout.state_load)
@@ -149,14 +144,14 @@ static void ui_draw_button(SDL_Surface * surface, rect_t *where, struct backgrou
     text_render(surface,  where, label_fmt, 0, label);
 }
 
-static void update_master_preview() {
-    SDL_LockSurface(master_preview);
+static void update_master_preview(SDL_Surface *onto, rect_t *where) {
+    SDL_LockSurface(onto);
     render_composite_frame(STATE_SOURCE_UI, master_xs, master_ys, master_pixels, master_frame);
     int i = 0;
     for(int y=0;y<layout.master.h;y++) {
         for(int x=0;x<layout.master.w;x++) {
-            ((uint32_t*)(master_preview->pixels))[i] = SDL_MapRGB(
-                master_preview->format,
+            ((uint32_t*)(onto->pixels))[(y+where->y)*onto->pitch/4 + x+where->x] = SDL_MapRGB(
+                onto->format,
                 (uint8_t)roundf(255 * master_frame[i].r),
                 (uint8_t)roundf(255 * master_frame[i].g),
                 (uint8_t)roundf(255 * master_frame[i].b));
@@ -164,7 +159,7 @@ static void update_master_preview() {
         }
     }
 
-    SDL_UnlockSurface(master_preview);
+    SDL_UnlockSurface(onto);
 
     for(i=0; i<n_output_strips; i++)
     {
@@ -177,12 +172,12 @@ static void update_master_preview() {
         int y2 = y_to_px(v->y);
         for(v = v->next; v; v = v->next)
         {
-            x1 = x2;
-            y1 = y2;
-            x2 = x_to_px(v->x);
-            y2 = y_to_px(v->y);
+            x1 = x2+where->x;
+            y1 = y2+where->y;
+            x2 = x_to_px(v->x)+where->x;
+            y2 = y_to_px(v->y)+where->y;
 
-            SDL_line(master_preview,
+            SDL_line(onto,
                      x1, y1,
                      x2, y2,
                      c.r, c.g, c.b, 255);
@@ -393,51 +388,52 @@ static void ui_update_audio_panel(SDL_Surface *onto, rect_t *where){
 }
 
 #ifdef VAMP_ENABLED
-static void ui_update_filter(struct filter * filter) {
+static void ui_update_filter(SDL_Surface *onto, rect_t *where,struct filter * filter) {
     rect_t r;
     rect_array_origin(&layout.filter.rect_array, &r);
-    fill_background(filter_pane, &r, &layout.filter.background);
-
-    text_render(filter_pane,  &(rect_t){0,0,0,0}, &layout.filter.name_txt, &filter->color, filter->name);
-
+    r.x+=where->x;
+    r.y+=where->y;
+    fill_background(onto, &r, &layout.filter.background);
+    text_render(onto,  where, &layout.filter.name_txt, &filter->color, filter->name);
     graph_update(&(filter->graph_state), filter->output.value);
-    graph_render(&(filter->graph_state), &layout.graph_filter.background, layout.graph_filter.line_color);
-    rect_origin(&layout.graph_filter.rect, &r);
-    SDL_BlitSurface(graph_surface, &r, filter_pane, &layout.graph_filter.rect);
+    rect_t gr;
+    rect_copy(&gr,&layout.graph_filter.rect);
+    gr.x+=where->x;
+    gr.y+=where->y;
+    graph_render(onto,where,&(filter->graph_state), &layout.graph_filter.background, layout.graph_filter.line_color);
 }
 #endif
 
-static void ui_update_signal(signal_t* signal) {
+static void ui_update_signal(SDL_Surface *onto, rect_t *where,signal_t* signal) {
     rect_t r;
     rect_array_origin(&layout.signal.rect_array, &r);
-    fill_background(signal_pane, &r, &layout.signal.background);
+    r.x+=where->x;
+    r.y+=where->y;
+    fill_background(onto, &r, &layout.signal.background);
 
     SDL_Color signal_c = color_to_SDL(signal->color);
-    text_render(signal_pane,  &(rect_t){0,0,0,0}, &layout.signal.name_txt, &signal_c, signal->name);
-
+    text_render(onto,  where, &layout.signal.name_txt, &signal_c, signal->name);
     graph_update(&(signal->graph_state), signal->output.value);
-    graph_render(&(signal->graph_state), &layout.graph_signal.background, layout.graph_signal.line_color);
     rect_origin(&layout.graph_signal.rect, &r);
-    SDL_BlitSurface(graph_surface, &r, signal_pane, &layout.graph_signal.rect);
-
-    for(int i = 0; i < signal->n_params; i++)
-    {
+    r.x+=where->x;
+    r.y+=where->y;
+    graph_render(onto,where,&(signal->graph_state), &layout.graph_signal.background, layout.graph_signal.line_color);
+    for(int i = 0; i < signal->n_params; i++){
         SDL_Color param_name_c = layout.slider.name_color;
         if(&signal->param_states[i] == active_param_source){
             param_name_c = layout.slider.highlight_color;
         }
         rect_array_layout(&layout.signal.sliders_rect_array, i, &r);
-        slider_render(signal_pane,&r,&signal->parameters[i], &signal->param_states[i], param_name_c);
+        r.x+=where->x;
+        r.y+=where->y;
+        slider_render(onto,&r,&signal->parameters[i], &signal->param_states[i], param_name_c);
     }
 }
-
 static void ui_render_signal_deck(){
     for(int i = 0; i < n_signals; i++) {
-        ui_update_signal(&signals[i]);
-
         rect_t r;
         rect_array_layout(&layout.signal.rect_array, i, &r);
-        SDL_BlitSurface(signal_pane, 0, screen, &r);
+        ui_update_signal(screen,&r,&signals[i]);
     }
 }
 
@@ -445,36 +441,31 @@ static void ui_render_filter_bank(){
 #ifdef VAMP_ENABLED
     for(int i = 0; i < n_filters; i++){
         if(!filters[i].display) continue;
-        ui_update_filter(&filters[i]);
-
         rect_t r;
         rect_array_layout(&layout.filter.rect_array, i, &r);
-        SDL_BlitSurface(filter_pane, 0, screen, &r);
+        ui_update_filter(screen,&r,&filters[i]);
     }
 #endif
 }
 
-static void ui_update_output(output_strip_t * output_strip){
+static void ui_update_output(SDL_Surface *onto, rect_t *where,output_strip_t * output_strip){
     rect_t r;
     rect_array_origin(&layout.output.rect_array, &r);
-    fill_background(output_pane, &r, &layout.output.background);
-
+    r.x+=where->x;r.y+=where->y;
+    fill_background(onto, &r, &layout.output.background);
     SDL_Color *color = NULL;
-    if(output_strip->bus > 0)
-        color = &output_strip->color;
-
+    if(output_strip->bus > 0)color = &output_strip->color;
     char buf[16];
     snprintf(buf, 16, "%d %s", output_strip->length, output_strip->id_str);
-    text_render(output_pane,  &(rect_t){0,0,0,0}, &layout.output.name_txt, color, buf);
+    text_render(onto,  where, &layout.output.name_txt, color, buf);
 }
 
 static void ui_render_output_panel(){
     for(int i = 0; i < n_output_strips;i++){
-        ui_update_output(&output_strips[i]);
 
         rect_t r;
         rect_array_layout(&layout.output.rect_array, i, &r);
-        SDL_BlitSurface(output_pane, 0, screen, &r);
+        ui_update_output(screen,&r,&output_strips[i]);
     }
 }
 
@@ -525,33 +516,40 @@ static void ui_update_state_panel(){
     }
 }
 
-static void ui_update_palette(struct colormap * cm){
+static void ui_update_palette(SDL_Surface *onto, rect_t *where, struct colormap * cm){
     rect_t r;
     rect_array_origin(&layout.palette.rect_array, &r);
-    fill_background(palette_pane, &r, &layout.palette.background);
-
-    SDL_LockSurface(palette_preview);
+    r.x+=where->x;
+    r.y+=where->y;
+    fill_background(onto, &r, &layout.palette.background);
+    SDL_LockSurface(onto);
+    rect_copy(&r,&layout.palette.preview_rect);
+    r.x+=where->x;
+    r.y+=where->y;
     for(int x = 0; x < layout.palette.preview_w; x++){
         color_t color = colormap_color(cm, (float) x / (float) layout.palette.preview_w);
-        Uint32 sdlcolor = SDL_MapRGB(palette_preview->format, (uint8_t)roundf(255 * color.r), (uint8_t)roundf(255 * color.g), (uint8_t)roundf(255 * color.b));
+        Uint32 sdlcolor = SDL_MapRGB(onto->format, (uint8_t)roundf(255 * color.r), (uint8_t)roundf(255 * color.g), (uint8_t)roundf(255 * color.b));
         for(int y = 0; y < layout.palette.preview_h; y++){
-            ((Uint32 *) palette_preview->pixels)[y * layout.palette.preview_w + x] = sdlcolor;
+            ((Uint32 *) onto->pixels)[(r.y+y) * (onto->pitch/4)+ (r.x+x)] = sdlcolor;
         }
     }
-    SDL_UnlockSurface(palette_preview);
-    SDL_BlitSurface(palette_preview, 0, palette_pane, &layout.palette.preview_rect);
-
-    text_render(palette_pane,  &(rect_t){0,0,0,0}, &layout.palette.name_txt, 0, cm->name);
+    SDL_UnlockSurface(onto);
+//    SDL_BlitSurface(palette_preview, 0, palette_pane, &layout.palette.preview_rect);
+    text_render(onto,  where, &layout.palette.name_txt, 0, cm->name);
 
     if(cm == cm_global){
-        SDL_FillRect(palette_pane, &layout.palette.active_rect, map_sdl_color(palette_pane, layout.palette.active_color));
+        rect_copy(&r,&layout.palette.active_rect);
+        r.x+=where->x;r.y+=where->y;
+        SDL_FillRect(onto, &r, map_sdl_color(onto, layout.palette.active_color));
     }else{
         SDL_Color c = layout.palette.active_color;
-        rectangleRGBA(palette_pane, 
-                layout.palette.active_rect.x,
-                layout.palette.active_rect.y,
-                layout.palette.active_rect.x + layout.palette.active_rect.w,
-                layout.palette.active_rect.y + layout.palette.active_rect.h,
+        rect_copy(&r,&layout.palette.active_rect);
+        r.x+=where->x;r.y+=where->y;
+        rectangleRGBA(onto, 
+                r.x,
+                r.y,
+                r.x + layout.palette.active_rect.w,
+                r.y + layout.palette.active_rect.h,
                 c.r, c.g, c.b, 255);
     }
 }
@@ -559,10 +557,8 @@ static void ui_update_palette(struct colormap * cm){
 static void ui_render_palette_panel(){
     rect_t r;
     for(int i = 0; i < n_colormaps; i++){
-        ui_update_palette(colormaps[i]);
         rect_array_layout(&layout.palette.rect_array, i, &r);
-
-        SDL_BlitSurface(palette_pane, 0, screen, &r);
+        ui_update_palette(screen,&r,colormaps[i]);
     }
 }
 
@@ -571,8 +567,7 @@ static void ui_render()
     update_ui();
 
     fill_background(screen, &layout.window.rect, &layout.window.background);
-    update_master_preview();
-    SDL_BlitSurface(master_preview, 0, screen, &layout.master.rect);
+    update_master_preview(screen,&layout.master.rect);
     ui_render_slot_deck();
 
     ui_update_audio_panel(screen,&layout.audio.rect);
@@ -653,12 +648,9 @@ static void mouse_drop_slot()
 static void mouse_drop_pattern_ev(struct xy xy)
 {
     if(!active_preview->pattern) return;
-
     float x;
     float y;
-
     get_cursor_in_preview(&x, &y);
-
     pat_command_t mouse_drag_x = {.index = 0,
                                   .status = STATUS_STOP,
                                   .value = x };
@@ -708,10 +700,8 @@ static int mouse_down_slot(slot_t* slot, struct xy xy)
         }
         return HANDLED;
     }
-    
     // See if the click is on the preview 
-    if(xy_in_rect(&xy, &layout.slot.preview_rect, &offset))
-    {
+    if(xy_in_rect(&xy, &layout.slot.preview_rect, &offset)){
         pat_command_t mouse_down_x = {.index = 0,
                                       .status = STATUS_START,
                                       .value = (offset.x) / (float) layout.slot.preview_w};
@@ -1058,16 +1048,12 @@ static void ui_poll()
 static int ui_run(void* args)
 {
     FPSmanager fps_manager;
-
     ui_init();
-
     SDL_initFramerate(&fps_manager);
     SDL_setFramerate(&fps_manager, 60);
     stat_fps = 60;
-
     unsigned int last_tick = SDL_GetTicks();
-    while(ui_running)
-    {
+    while(ui_running){
         ui_render();
         ui_poll();
         SDL_framerateDelay(&fps_manager);
@@ -1089,8 +1075,7 @@ void ui_start(void (*ui_done)()){
     if(!ui_thread) FAIL("Could not create UI thread: %s\n",SDL_GetError());
 }
 
-void ui_stop()
-{
+void ui_stop(){
     ui_running = 0;
     SDL_WaitThread(ui_thread, 0);
 }

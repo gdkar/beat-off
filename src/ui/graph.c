@@ -86,18 +86,15 @@ static int x_to_pixel(graph_state_t* state, float x)
     return pix;
 }
 
-void graph_render(graph_state_t* state, struct background * bg, SDL_Color line_color)
+void graph_render(SDL_Surface *onto, rect_t *where, graph_state_t* state, struct background * bg, SDL_Color line_color)
 {
     rect_t r;
     if(!state->history) return;
-
-    r.x = 0;
-    r.y = 0;
+    r.x = where->x;
+    r.y = where->y;
     r.w = state->width;
     r.h = state->height;
-
-    fill_background(graph_surface, &r, bg);
-
+    fill_background(onto, &r, bg);
     int prevX = x_to_pixel(state, state->history[0]);
     for(int i = 1; i < state->width; i++)
     {
@@ -106,7 +103,7 @@ void graph_render(graph_state_t* state, struct background * bg, SDL_Color line_c
         if(x > prevX) delta = 1;
         if(x < prevX) delta = -1;
         //surf, x, y1, y2, r,g,b,a
-        vlineRGBA(graph_surface, state->width - i, prevX + delta, x, line_color.r, line_color.g, line_color.b, 255);
+        vlineRGBA(onto, where->x+state->width - i,where->y +prevX + delta, where->y+x, line_color.r, line_color.g, line_color.b, 255);
         //surf, x1, y1, x2, y2, r,g,b,a
         prevX = x;
     }

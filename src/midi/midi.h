@@ -1,6 +1,6 @@
 #ifndef __MIDI_H
 #define __MIDI_H
-
+#include "core/beat-off.h"
 #include <portmidi.h>
 #include "core/parameter.h"
 #include "core/slot.h"

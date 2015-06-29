@@ -36,7 +36,7 @@ CFGSECTION(slot,
     CFG_RECT(mute, 5, 113, 10, 10)
     CFG_BACKGROUND(mute, "#FF8800", "mute.png")
     CFG_BACKGROUND(mute_active, "#FFCCCC", "mute_active.png")
-    CFG_RECT_ARRAY(sliders, 8, 130, 110, 32, 0, 36, LAYOUT_TILE_NONE)
+    CFG_RECT_ARRAY(sliders, 8, 110, 110, 32, 0, 36, LAYOUT_TILE_NONE)
 )
     
 CFGSECTION(add_pattern,

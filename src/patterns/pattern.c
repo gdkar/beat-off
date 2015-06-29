@@ -33,7 +33,5 @@ void pattern_init(){
     memcpy(patterns, default_patterns, n_patterns * sizeof(pattern_t *));
 }
 
-void pattern_del(){
-    free(patterns);
-}
+void pattern_del(){free(patterns);}
 

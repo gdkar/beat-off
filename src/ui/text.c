@@ -30,19 +30,15 @@ void text_unload_fonts(){
     }
 }
 
-void text_render(SDL_Surface * surface, struct txt * params, const SDL_Color * color, const char * text){
+void text_render(SDL_Surface * surface, rect_t *where, struct txt * params, const SDL_Color * color, const char * text){
     // Passing TTF_RenderText_*(...) a NULL text pointer results in "undefined behavior"
     if(!text) return; 
-
     if(!params->ui_font.font)
         text_load_font(params);
     // Passing TTF_RenderText_*(...) a NULL text pointer results in a segfault.
     // Its better to not draw anything than to segfault. If we couldn't load the font, just give up.
     if(!params->ui_font.font) return;
-
-    if(!color) 
-        color = &params->color;
-
+    if(!color)  color = &params->color;
     SDL_Surface* msg;
 #ifdef TEXT_ANTIALIAS
     msg = TTF_RenderText_Blended(params->ui_font.font, text, *color);
@@ -50,13 +46,13 @@ void text_render(SDL_Surface * surface, struct txt * params, const SDL_Color * c
     msg = TTF_RenderText_Solid(params->ui_font.font, text, *color);
 #endif
     if(!msg) return;
-
     rect_t r;
     r.x = params->x;
     r.y = params->y;
     r.w = msg->w;
     r.h = msg->h;
-    
+    r.x+=where->x;
+    r.y+=where->y;
     switch(params->align){
         case LAYOUT_ALIGN_BR:
             r.y -= r.h; // fall through
@@ -72,7 +68,6 @@ void text_render(SDL_Surface * surface, struct txt * params, const SDL_Color * c
         default:
             break;
     }
-
     SDL_BlitSurface(msg, 0, surface, &r);
     SDL_FreeSurface(msg);
 }

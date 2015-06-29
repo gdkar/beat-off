@@ -20,8 +20,8 @@ enum slider_event {
 
 void slider_init();
 void slider_del();
-void slider_render(const parameter_t* param, param_state_t* state, SDL_Color c);
-void slider_render_alpha(param_state_t* state);
+void slider_render(SDL_Surface *onto, rect_t *where, const parameter_t* param, param_state_t* state, SDL_Color c);
+void slider_render_alpha(SDL_Surface *onto, rect_t *where, param_state_t* state);
 void slider_output_render(param_output_t * output);
 
 void mouse_drag_alpha_slider();

@@ -4,9 +4,7 @@
 #include "waveform/waveform.h"
 #include <SDL/SDL.h>
 
-extern SDL_Surface* waveform_surface;
-
-void ui_waveform_render();
+void ui_waveform_render(SDL_Surface *onto, rect_t *where);
 void ui_waveform_init();
 void ui_waveform_del();
 

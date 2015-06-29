@@ -12,22 +12,18 @@ SDL_Surface* waveform_surface;
 int skip = 1;
 
 void ui_waveform_init(){
-    waveform_surface = SDL_CreateRGBSurface(0, layout.waveform.w, layout.waveform.h, 32, 0, 0, 0, 0);
-    if(!waveform_surface) FAIL("SDL_CreateRGBSurface Error: %s\n", SDL_GetError());
-
     if(layout.waveform.skip * layout.waveform.w < WAVEFORM_HISTORY_SIZE)
         skip = layout.waveform.skip;
 }
 
-void ui_waveform_render(){
+void ui_waveform_render(SDL_Surface *onto, rect_t *where){
     rect_t r;
     rect_origin(&layout.waveform.rect, &r);
-
-    SDL_FillRect(waveform_surface, &r, SDL_MapRGB(waveform_surface->format, 30, 30, 30));
+    r.x+=where->x;r.y+=where->y;
+    SDL_FillRect(onto, where, SDL_MapRGB(onto->format, 30, 30, 30));
     int h;
     SDL_Color c;
     if(skip < 1) skip = 1;
-
     for(int j = 0; j < N_WF_BINS; j++){
         float * history = waveform_bins[j].history;
         int hptr = waveform_bins[j].hptr; 
@@ -42,8 +38,9 @@ void ui_waveform_render(){
                     hptr = WAVEFORM_HISTORY_SIZE;
                 x = MAX(x, history[hptr]);
             }
+            x = MIN(x,1.0);
             h = x * layout.waveform.h;
-            vlineRGBA(waveform_surface, layout.waveform.w - i, (layout.waveform.h + h) / 2, (layout.waveform.h - h) / 2, c.r, c.g, c.b, 255);
+            vlineRGBA(onto, where->x+layout.waveform.w - i, where->y+(layout.waveform.h + h) / 2, where->y+(layout.waveform.h - h) / 2, c.r, c.g, c.b, 255);
         }
     }
     for(int i = 0; i < layout.waveform.w; i++){
@@ -52,15 +49,14 @@ void ui_waveform_render(){
             l = l | beat_lines[i * skip + k];
         }
         if(l & 1)
-            vlineRGBA(waveform_surface, layout.waveform.w - i, layout.waveform.y, layout.waveform.h, 128, 255, 0, 200);
+            vlineRGBA(onto, layout.waveform.w - i + where->x, layout.waveform.y+where->y,where->y+ layout.waveform.h, 128, 255, 0, 200);
         if(l & 2)
-            vlineRGBA(waveform_surface, layout.waveform.w - i, layout.waveform.y, layout.waveform.h, 255, 128, 0, 200);
+            vlineRGBA(onto, layout.waveform.w - i + where->x, layout.waveform.y+where->y,where->y+ layout.waveform.h, 255, 128, 0, 200);
         if(l & 4)
-            vlineRGBA(waveform_surface, layout.waveform.w - i, layout.waveform.y, layout.waveform.h, 255, 0, 0, 200);
+            vlineRGBA(onto, layout.waveform.w - i + where->x, layout.waveform.y+where->y, where->y+layout.waveform.h, 255, 0, 0, 200);
          
     }
 }
 
 void ui_waveform_del(){
-    SDL_FreeSurface(waveform_surface);
 }

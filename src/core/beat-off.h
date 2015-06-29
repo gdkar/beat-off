@@ -6,9 +6,10 @@
 extern "C"{
 #endif
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <GL/glut.h>
-
+#include <GLFW/glfw3.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_video.h>
 #include "util/math.h"
 #include "core/err.h"
 #include "core/config.h"

@@ -83,22 +83,16 @@ output_strip_t output_strips[N_OUTPUT_STRIPS] = {
     */
 };
 
-void output_to_buffer(output_strip_t* strip, color_t* buffer)
-{
+void output_to_buffer(output_strip_t* strip, color_t* buffer){
     if(SDL_LockMutex(patterns_updating)) FAIL("Unable to lock update mutex: %s\n", SDL_GetError());
-
     output_vertex_t* vert = strip->first;
     strip->xs = malloc(sizeof(float) * strip->length);
     if(!strip->xs) FAIL("Unable to alloc xs for strip.\n");
     strip->ys = malloc(sizeof(float) * strip->length);
     if(!strip->ys) FAIL("Unable to alloc ys for strip.\n");
-
     strip->frame = buffer;
-
-    for(int i=0; i<strip->length; i++)
-    {
-        while(i > vert->next->index)
-        {
+    for(int i=0; i<strip->length; i++){
+        while(i > vert->next->index){
             vert = vert->next;
             if(!vert->next) return; // Error condition
         }
@@ -110,10 +104,8 @@ void output_to_buffer(output_strip_t* strip, color_t* buffer)
         //buffer[i] = render_composite(x, y);
     }
     render_composite_frame(STATE_SOURCE_OUTPUT, strip->xs, strip->ys, strip->length, strip->frame);
-
     free(strip->xs);
     free(strip->ys);
-
     SDL_UnlockMutex(patterns_updating);
 }
 

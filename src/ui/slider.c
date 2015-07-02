@@ -13,13 +13,8 @@ static struct
     float initial_value;
     float * value_p;
 } active_slider;
-
-void slider_init()
-{
-}
-
+void slider_init(){}
 void slider_del(){}
-
 void slider_render_alpha(SDL_Surface *onto, rect_t *where, param_state_t* state)
 {
     param_output_t * param_output = param_state_output(state);

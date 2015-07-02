@@ -20,9 +20,6 @@ SDL_Color color_to_SDL(color_t color){
 }
 
 // --- Colormaps ---
-
-// This colormap is special, it fades from black/*color*/white
-// where *color* is taken from the global colormap
 struct colormap s_cm_global_mono = {
     .name = "Global Mono",
     .n_points = 3,
@@ -49,6 +46,8 @@ struct colormap * cm_global_mono = &s_cm_global_mono;
 int n_colormaps = 10;
 struct colormap * colormaps[10] =  {&s_cm_global_mono, &cm_rainbow, &cm_rainbow_edged, &cm_rainbow_equal, &cm_jet, &cm_hot, &cm_cyan, &cm_purple, &cm_stoplight, &cm_bright};
 
+// This colormap is special, it fades from black/*color*/white
+// where *color* is taken from the global colormap
 static float mono_value = 0;
 
 color_t colormap_color(struct colormap * cm, float value){

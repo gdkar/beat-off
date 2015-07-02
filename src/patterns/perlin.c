@@ -63,7 +63,7 @@ static void update(slot_t* slot, mbeat_t t)
     state->colormap = slot->colormap ? slot->colormap : cm_global;
 }
 
-static color_t render(const state_t* restrict state, float x, float y)
+static inline color_t render(const state_t* restrict state, float x, float y)
 {
     return colormap_color(state->colormap, perlin3d(x * state->zoom, y * state->zoom, state->t) + 0.5);
 }
@@ -72,4 +72,5 @@ static void command(slot_t* slot, pat_command_t cmd)
 {
 }
 
+MAKE_PATTERN_RENDER_IMG_FN
 pattern_t pat_perlin = MAKE_PATTERN;

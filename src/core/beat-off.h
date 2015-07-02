@@ -22,7 +22,7 @@ extern "C"{
 #include "ui/ui.h"
 #include "output/output.h"
 #include "midi/midi.h"
-#include "dynamic/object.h"
+#include "dynamic/dynamic.h"
 #include "util/util.h"
 #include <stdbool.h>
 #include "util/tinycthread.h"

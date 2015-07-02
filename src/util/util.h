@@ -12,7 +12,7 @@ extern "C" {
 #include "util/murmur3_32_constexpr.hpp"
 #endif
 #include "util/MurmurHash3.h"
-inline uint64_t hashfn(uint64_t k){
+static inline uint64_t hashfn(uint64_t k){
   k ^= (k>> 31);
   k *= 0x7fb5d329728ea185;
   k ^= (k>> 27);

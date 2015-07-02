@@ -10,7 +10,6 @@
 #include "util/siggen.h"
 
 #define N_PATTERNS 10
-
 pattern_t * default_patterns[N_PATTERNS] = {
     &pat_full,
     &pat_wave,
@@ -23,15 +22,12 @@ pattern_t * default_patterns[N_PATTERNS] = {
     &pat_perlin,
     &pat_psparkle,
 };
-
 pattern_t ** patterns;
 int n_patterns = N_PATTERNS;
-
 void pattern_init(){
     patterns = malloc(n_patterns * sizeof(pattern_t *));
     if(!patterns) FAIL("Unable to malloc patterns array\n");
     memcpy(patterns, default_patterns, n_patterns * sizeof(pattern_t *));
 }
-
 void pattern_del(){free(patterns);}
 

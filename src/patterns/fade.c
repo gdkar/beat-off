@@ -85,7 +85,7 @@ static void command(slot_t* slot, pat_command_t cmd)
     }
 }
 
-static color_t render(const state_t* restrict state, float x, float y)
+static inline color_t render(const state_t* restrict state, float x, float y)
 {
     color_t result = state->color;
     /*
@@ -104,5 +104,5 @@ static color_t render(const state_t* restrict state, float x, float y)
     */
     return result;
 }
-
+MAKE_PATTERN_RENDER_IMG_FN
 pattern_t pat_fade = MAKE_PATTERN;

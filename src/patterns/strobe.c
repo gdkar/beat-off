@@ -52,8 +52,7 @@ static const parameter_t params[N_PARAMS] = {
     },
 };
 
-void init(state_t* state)
-{
+void init(state_t* state){
     state->color = (color_t) {0.0, 0.0, 0.0, 0.0};
     freq_init(&state->freq_state, 0.5, 1);
     state->last_t = 0;
@@ -61,15 +60,12 @@ void init(state_t* state)
     state->hit_dir = 0;
     state->hit_state = 0.;
 }
-
 static void update(slot_t* slot, mbeat_t t)
 {
     state_t* state = (state_t*)slot->state;
     freq_update(&state->freq_state, t, param_state_get(&slot->param_states[FREQ]));
-
     struct colormap * cm = slot->colormap ? slot->colormap : cm_global;
     state->color = colormap_color(cm, param_state_get(&slot->param_states[COLOR]));
-
     float a = 0;
     float phase = state->freq_state.phase;
     if(phase > (1.0 - param_state_get(&slot->param_states[ATTACK]) / 2.)){
@@ -81,14 +77,11 @@ static void update(slot_t* slot, mbeat_t t)
     }else{
         a = 0.;
     }
-
     if(state->hit_dir != 0){
         if(state->hit_dir > 0){
             // Attack
             state->hit_state += MB2B(t - state->last_t) / (param_state_get(&slot->param_states[ATTACK]) / 4. + 0.05);
-            if(state->hit_state >= 1.){
-                state->hit_state = 1.;
-            }
+            if(state->hit_state >= 1.){state->hit_state = 1.;}
         }else{
             state->hit_state -= MB2B(t - state->last_t) / (param_state_get(&slot->param_states[DECAY]) /4. + 0.05);
             if(state->hit_state <= 0.){
@@ -98,16 +91,12 @@ static void update(slot_t* slot, mbeat_t t)
             }
         }
     }
-
     state->last_t = t;
     state->a = MIN(1.0, fabs(state->hit_dir) * state->hit_state + a);
 }
-
-static void command(slot_t* slot, struct pat_command cmd)
-{
+static void command(slot_t* slot, struct pat_command cmd){
     state_t* state = (state_t*)slot->state;
-    switch(cmd.status)
-    {
+    switch(cmd.status){
         case STATUS_START:
             state->hit_dir = cmd.value;
             state->hit_state = 0;
@@ -120,11 +109,11 @@ static void command(slot_t* slot, struct pat_command cmd)
     }
 }
 
-static color_t render(const state_t* restrict state, float x, float y)
-{
+static inline color_t render(const state_t* restrict state, float x, float y){
     color_t result = state->color;
     result.a = state->a;
     return result;
 }
+MAKE_PATTERN_RENDER_IMG_FN
 
 pattern_t pat_strobe = MAKE_PATTERN;

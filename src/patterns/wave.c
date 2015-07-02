@@ -100,7 +100,7 @@ static void command(slot_t* slot, pat_command_t cmd)
 {
 }
 
-static color_t render(const state_t* restrict state, float x, float y)
+static inline color_t render(const state_t* restrict state, float x, float y)
 {
     color_t result = state->color;
     result.a = osc_fn_gen(state->type, state->freq_state.phase + y * state->ky + x * state->kx);
@@ -108,4 +108,5 @@ static color_t render(const state_t* restrict state, float x, float y)
     return result;
 }
 
+MAKE_PATTERN_RENDER_IMG_FN
 pattern_t pat_wave = MAKE_PATTERN;

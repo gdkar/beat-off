@@ -19,7 +19,7 @@
 #include "core/parameter.h"
 #include "core/slot.h"
 #include "state/state.h"
-#include "dynamic/object.h"
+#include "dynamic/dynamic.h"
 #include "filters/filter.h"
 #include "waveform/waveform.h"
 #include "midi/midi.h"
@@ -31,8 +31,6 @@
 
 #define SURFACES \
     X(master_preview, layout.master) \
-    X(pattern_preview, layout.slot.preview_rect) \
-    X(pattern_pane, layout.add_pattern) \
     X(state_panel_pane, layout.state_panel) \
     X(state_save_pane, layout.state_save) \
     X(state_load_pane, layout.state_load)
@@ -59,6 +57,10 @@ static size_t master_pixels;
 static float * master_xs;
 static float * master_ys;
 static color_t * master_frame;
+static size_t preview_pixels;
+static float *preview_xs;
+static float *preview_ys;
+static color_t *preview_frame;
 static void (*ui_done_fn)();
 static int ui_running;
 static SDL_Thread* ui_thread;
@@ -94,12 +96,24 @@ SURFACES
     master_xs = malloc(sizeof(float) * master_pixels);
     master_ys = malloc(sizeof(float) * master_pixels);
     master_frame = malloc(sizeof(color_t) * master_pixels);
+    preview_pixels = layout.slot.preview_w * layout.slot.preview_h;
+    preview_xs = malloc(sizeof(float) * preview_pixels);
+    preview_ys = malloc(sizeof(float) * preview_pixels);
+    preview_frame = malloc(sizeof(color_t) * preview_pixels);
 
     if(!master_xs) FAIL("Unable to alloc xs for master.\n");
     if(!master_ys) FAIL("Unable to alloc ys for master.\n");
     if(!master_frame) FAIL("Unable to alloc frame for master.\n");
 
     int i = 0;
+    for(int y=0;y<layout.slot.preview_w;y++) {
+        for(int x=0;x<layout.slot.preview_h;x++) {
+            preview_xs[i] = ((float)x / (layout.slot.preview_w- 1)) * 2 - 1;
+            preview_ys[i] = ((float)y / (layout.slot.preview_h - 1)) * 2 - 1;
+            i++;
+        }
+    }
+    i=0;
     for(int y=0;y<layout.master.h;y++) {
         for(int x=0;x<layout.master.w;x++) {
             master_xs[i] = ((float)x / (layout.master.w - 1)) * 2 - 1;
@@ -146,7 +160,7 @@ static void ui_draw_button(SDL_Surface * surface, rect_t *where, struct backgrou
 
 static void update_master_preview(SDL_Surface *onto, rect_t *where) {
     SDL_LockSurface(onto);
-    render_composite_frame(STATE_SOURCE_UI, master_xs, master_ys, master_pixels, master_frame);
+    render_composite_frame(STATE_SOURCE_UI, master_xs,master_ys,master_pixels,master_frame);
     int i = 0;
     for(int y=0;y<layout.master.h;y++) {
         for(int x=0;x<layout.master.w;x++) {
@@ -185,32 +199,55 @@ static void update_master_preview(SDL_Surface *onto, rect_t *where) {
     }
 }
 
-static void update_pattern_preview(slot_t* slot) {
-    SDL_LockSurface(pattern_preview);
-    for(int x = 0; x < layout.slot.preview_w; x++){
+static void update_pattern_preview(SDL_Surface *onto, rect_t *where, slot_t* slot) {
+//    color_t *tmp = (color_t*)alloca(layout.slot.preview_w*layout.slot.preview_h*sizeof(color_t));
+//    (*slot->pattern->render_img)(slot->ui_state,tmp,layout.slot.preview_w,layout.slot.preview_h);
+    memset(preview_frame, 0, sizeof(color_t)*layout.slot.preview_w*layout.slot.preview_h);
+    render_composite_preview(slot,STATE_SOURCE_UI, preview_xs,preview_ys,preview_pixels,preview_frame);
+    int i = 0;
+    for(int y=0;y<layout.slot.preview_h;y++) {
+        for(int x=0;x<layout.slot.preview_w;x++) {
+            ((uint32_t*)(onto->pixels))[(y+where->y)*onto->pitch/4 + x+where->x] = SDL_MapRGB(
+                onto->format,
+                (uint8_t)roundf(255 * preview_frame[i].r),
+                (uint8_t)roundf(255 * preview_frame[i].g),
+                (uint8_t)roundf(255 * preview_frame[i].b));
+            i++;
+        }
+    }
+/*   int i = 0;
+    for(int y=0;y<layout.slot.preview_h;y++) {
+        for(int x=0;x<layout.slot.preview_y;x++) {
+            ((uint32_t*)(pattern_preview->pixels))[(y)*layout.slot.preview_w + x] = SDL_MapRGBA(
+                pattern_preview->format,
+                (uint8_t)roundf(255 * preview_frame[i].r),
+                (uint8_t)roundf(255 * preview_frame[i].g),
+                (uint8_t)roundf(255 * preview_frame[i].b),
+                (uint8_t)roundf(255 * preview_frame[i].a));
+            i++;
+        }
+    }*/
+/*    for(int x = 0; x < layout.slot.preview_w; x++){
         for(int y = 0; y < layout.slot.preview_h; y++){
             // Checkerboard background
             // TODO: get this from the image file
             //int i = (x / 10) + (y / 10);
-            //float bg_shade = (i & 1) ? 0.05 : 0.35;
-
-            float xf = ((float)x / (layout.slot.preview_w - 1)) * 2 - 1;
+            //float bg_shade = (i & 1) ? 0.05 : 0.35;*/
+//            color_t pixel = tmp[y*layout.slot.preview_w+x];
+/*            float xf = ((float)x / (layout.slot.preview_w - 1)) * 2 - 1;
             float yf = ((float)y / (layout.slot.preview_h - 1)) * 2 - 1;
-            color_t pixel = (*slot->pattern->render)(slot->ui_state, xf, yf);
-            /*
-            ((uint32_t*)(pattern_preview->pixels))[x + layout.slot.preview_w * y] = SDL_MapRGB(
+            color_t pixel = (*slot->pattern->render)(slot->ui_state, xf, yf);*/
+/*            ((uint32_t*)(pattern_preview->pixels))[x + layout.slot.preview_w * y] = SDL_MapRGB(
                 pattern_preview->format,
                 (uint8_t)roundf(255 * (pixel.r * pixel.a + (1.0 - pixel.a) * bg_shade)),
                 (uint8_t)roundf(255 * (pixel.g * pixel.a + (1.0 - pixel.a) * bg_shade)),
-                (uint8_t)roundf(255 * (pixel.b * pixel.a + (1.0 - pixel.a) * bg_shade)));
-                */
-            ((uint32_t*)(pattern_preview->pixels))[x + layout.slot.preview_w * y] = SDL_MapRGBA(
+                (uint8_t)roundf(255 * (pixel.b * pixel.a + (1.0 - pixel.a) * bg_shade)));*/
+/*            ((uint32_t*)(pattern_preview->pixels))[x + layout.slot.preview_w * y] = SDL_MapRGBA(
                 pattern_preview->format,
                 (uint8_t)roundf(255 * pixel.r), (uint8_t)roundf(255 * pixel.g),
-                (uint8_t)roundf(255 * pixel.b), (uint8_t)roundf(255 * pixel.a));
-        }
-    }
-    SDL_UnlockSurface(pattern_preview);
+                (uint8_t)roundf(255 * pixel.b), (uint8_t)roundf(255 * pixel.a));*/
+/*        }
+    }*/
 }
 
 static void ui_update_slot(SDL_Surface *onto, rect_t *where, slot_t* slot) {
@@ -220,12 +257,11 @@ static void ui_update_slot(SDL_Surface *onto, rect_t *where, slot_t* slot) {
     r.y+=where->y;
     fill_background(onto, &r, &layout.slot.background);
     if(slot->pattern){
-        update_pattern_preview(slot);
         rect_copy(&r,&layout.slot.preview_rect);
         r.x+=where->x;
         r.y+=where->y;
         fill_background(onto, &r, &layout.slot.preview_background);
-        SDL_BlitSurface(pattern_preview, 0, onto, &r);
+        update_pattern_preview(onto,&r,slot);
         text_render(onto, where,&layout.slot.name_txt, 0, slot->pattern->name);
         const char * palette_str;
         if(slot->colormap) palette_str = slot->colormap->name;

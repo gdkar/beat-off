@@ -54,7 +54,6 @@ static const parameter_t params[N_PARAMS] = {
         .val_to_str = float_to_string,
     },
 };
-
 static void init(state_t* state)
 {
     state->color = (color_t) {0., 0., 0., 0.};
@@ -62,7 +61,6 @@ static void init(state_t* state)
     state->cx = 0.;
     state->cy = 0.;
 }
-
 static void update(slot_t* slot, long t)
 {
     state_t* state = (state_t*)slot->state;
@@ -73,7 +71,6 @@ static void update(slot_t* slot, long t)
     state->cx = param_state_get(&slot->param_states[CX]) * 2 - 1.0;
     state->cy = param_state_get(&slot->param_states[CY]) * 2 - 1.0;
 }
-
 static void command(slot_t* slot, pat_command_t cmd)
 {
     switch(cmd.index)
@@ -86,19 +83,13 @@ static void command(slot_t* slot, pat_command_t cmd)
             break;
     }
 }
-
-static color_t render(const state_t* restrict state, float x, float y)
-{
+static inline color_t render(const state_t* restrict state, float x, float y){
     float d;
     color_t result = state->color;
-
-    d = sqrt(pow(state->cx - x, 2) + pow(state->cy - y, 2)) / state->r;
-    
-    if(d < 1.0)
-        result.a = pow(1.0 - pow(d, state->rho), 1.0 / state->rho);
-    else
-        result.a = 0.0;
+    d = hypotf(state->cx-x,state->cy-y)/state->r;
+    if(d < 1.0)   result.a = powf(1.0 - powf(d, state->rho), 1.0 / state->rho);
+    else          result.a = 0.0;
     return result;
 }
-
+MAKE_PATTERN_RENDER_IMG_FN
 pattern_t pat_bubble = MAKE_PATTERN;

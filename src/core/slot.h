@@ -31,7 +31,9 @@ typedef struct slot
 extern int n_slots;
 extern slot_t slots[];
 void update_patterns(mbeat_t t);
+void render_composite_image(state_source_t src, color_t *pixels, int width, int height);
 void render_composite_frame(state_source_t src, float * x, float * y, size_t n, color_t * out);
+void render_composite_preview(slot_t*slot,state_source_t src, float * x, float * y, size_t n, color_t * out);
 void pat_load(slot_t* slot, struct pattern * pattern);
 void pat_unload(slot_t* slot);
 void update_ui();

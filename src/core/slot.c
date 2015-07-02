@@ -4,14 +4,27 @@
 #include "core/slot.h"
 #include "core/time.h"
 #include "core/config.h"
-
+#include "util/sse_mathfun.h"
+#include <alloca.h>
 #define N_SLOTS 8
 
 int n_slots = N_SLOTS;
 slot_t slots[N_SLOTS]; // Initialize everything to zero
 
 SDL_mutex* patterns_updating;
-
+void render_composite_preview(slot_t *slot, state_source_t src, float * x, float * y, size_t n, color_t * out){
+    memset(out, 0, n * sizeof(color_t)); // Initialize to black
+        const pat_state_pt pat_state_p = (src == STATE_SOURCE_UI) ? slot->ui_state : slots->state;
+        const pat_render_img_fn_pt pat_render = *slot->pattern->render_img;
+        pat_render(pat_state_p,2.0f,x,y,n,out);
+/*            for(size_t j = 0; j < n; j++){
+                color_t c = pat_render(pat_state_p, x[j], y[j]);
+                c.a *= slot_alpha;
+                out[j].r = out[j].r * (1. - c.a) + c.r * c.a;
+                out[j].g = out[j].g * (1. - c.a) + c.g * c.a;
+                out[j].b = out[j].b * (1. - c.a) + c.b * c.a;
+            }*/
+}
 void render_composite_frame(state_source_t src, float * x, float * y, size_t n, color_t * out){
     memset(out, 0, n * sizeof(color_t)); // Initialize to black
     int has_solo = 0;
@@ -24,17 +37,18 @@ void render_composite_frame(state_source_t src, float * x, float * y, size_t n, 
         if(slots[i].mute) continue;
         if(has_solo && !slots[i].solo) continue;
         const pat_state_pt pat_state_p = (src == STATE_SOURCE_UI) ? slots[i].ui_state : slots[i].state;
-        const pat_render_fn_pt pat_render = *slots[i].pattern->render;
+        const pat_render_img_fn_pt pat_render = *slots[i].pattern->render_img;
         float slot_alpha = param_state_get(&slots[i].alpha);
 
         if(slot_alpha > 1e-4){
-            for(size_t j = 0; j < n; j++){
+          pat_render(pat_state_p,slot_alpha,x,y,n,out);
+/*            for(size_t j = 0; j < n; j++){
                 color_t c = pat_render(pat_state_p, x[j], y[j]);
                 c.a *= slot_alpha;
                 out[j].r = out[j].r * (1. - c.a) + c.r * c.a;
                 out[j].g = out[j].g * (1. - c.a) + c.g * c.a;
                 out[j].b = out[j].b * (1. - c.a) + c.b * c.a;
-            }
+            }*/
         }
     }
 }

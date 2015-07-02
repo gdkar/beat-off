@@ -106,7 +106,7 @@ static void update(slot_t* slot, mbeat_t t) {
     state->last_t = t;
 }
 
-static color_t render(const state_t* restrict state, float x, float y)
+static inline color_t render(const state_t* restrict state, float x, float y)
 {
     color_t output = state->color;
     float a = 0.;
@@ -188,4 +188,5 @@ static void command(slot_t* slot, pat_command_t cmd)
     }
 }
 
+MAKE_PATTERN_RENDER_IMG_FN
 pattern_t pat_swipe = MAKE_PATTERN;

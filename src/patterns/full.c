@@ -50,7 +50,7 @@ static void update(slot_t* slot, long t)
     state->color.b *= v;
 }
 
-static color_t render(const state_t* restrict state, float x, float y)
+inline static color_t render(const state_t* restrict state, float x, float y)
 {
     return state->color;
 }
@@ -68,4 +68,5 @@ static void command(slot_t* slot, pat_command_t cmd)
     }
 }
 
+MAKE_PATTERN_RENDER_IMG_FN
 pattern_t pat_full = MAKE_PATTERN;

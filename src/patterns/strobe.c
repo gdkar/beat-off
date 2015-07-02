@@ -68,22 +68,22 @@ static void update(slot_t* slot, mbeat_t t)
     state->color = colormap_color(cm, param_state_get(&slot->param_states[COLOR]));
     float a = 0;
     float phase = state->freq_state.phase;
-    if(phase > (1.0 - param_state_get(&slot->param_states[ATTACK]) / 2.)){
-        a = (1.0 - phase) / (param_state_get(&slot->param_states[ATTACK]) / 2.);
-        a = 1.0 - a;
-    }else if(phase < param_state_get(&slot->param_states[DECAY]) / 2.){
-        a = (phase) / (param_state_get(&slot->param_states[DECAY]) / 2.);
-        a = 1.0 - a;
+    if(phase > (1.0f - param_state_get(&slot->param_states[ATTACK]) / 2.f)){
+        a = (1.0f - phase) / (param_state_get(&slot->param_states[ATTACK]) / 2.f);
+        a = 1.0f - a;
+    }else if(phase < param_state_get(&slot->param_states[DECAY]) / 2.f){
+        a = (phase) / (param_state_get(&slot->param_states[DECAY]) / 2.f);
+        a = 1.0f - a;
     }else{
-        a = 0.;
+        a = 0.f;
     }
     if(state->hit_dir != 0){
         if(state->hit_dir > 0){
             // Attack
-            state->hit_state += MB2B(t - state->last_t) / (param_state_get(&slot->param_states[ATTACK]) / 4. + 0.05);
+            state->hit_state += MB2B(t - state->last_t) / (param_state_get(&slot->param_states[ATTACK]) / 4. + 0.05f);
             if(state->hit_state >= 1.){state->hit_state = 1.;}
         }else{
-            state->hit_state -= MB2B(t - state->last_t) / (param_state_get(&slot->param_states[DECAY]) /4. + 0.05);
+            state->hit_state -= MB2B(t - state->last_t) / (param_state_get(&slot->param_states[DECAY]) /4. + 0.05f);
             if(state->hit_state <= 0.){
                 // Remove hit
                 state->hit_state = 0;
@@ -92,7 +92,7 @@ static void update(slot_t* slot, mbeat_t t)
         }
     }
     state->last_t = t;
-    state->a = MIN(1.0, fabs(state->hit_dir) * state->hit_state + a);
+    state->a = fminf(1.0, fabsf(state->hit_dir) * state->hit_state + a);
 }
 static void command(slot_t* slot, struct pat_command cmd){
     state_t* state = (state_t*)slot->state;

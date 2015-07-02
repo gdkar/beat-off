@@ -6,22 +6,10 @@
 #include "core/err.h"
 #include "waveform/waveform.h"
 
-SDL_Surface* graph_surface;
 
+void graph_init(){}
 
-void graph_init()
-{
-    graph_surface = SDL_CreateRGBSurface(0, 
-                                         MAX(layout.graph_filter.w, layout.graph_signal.w),
-                                         MAX(layout.graph_filter.h, layout.graph_signal.h),
-                                         32, 0, 0, 0, 0);
-    if(!graph_surface) FAIL("SDL_CreateRGBSurface Error: %s\n", SDL_GetError());
-}
-
-void graph_del()
-{
-    SDL_FreeSurface(graph_surface);
-}
+void graph_del(){}
 
 void graph_create_filter(graph_state_t* state)
 {

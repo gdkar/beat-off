@@ -1,6 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
-
+#include "util/util.h"
 #include "core/err.h"
 #include "core/slot.h"
 #include "patterns/pattern.h"
@@ -60,14 +60,14 @@ static void update(slot_t* slot, mbeat_t t)
     for(int i = 0; i < BUCKET_SIZE; i++){
     }
     // I can't explain where the extra factor of 0.1 comes from? But it seems to be right
-    int gen = RAND_MAX * param_state_get(&slot->param_states[GEN]) * (decay / dt) * 0.1;
+    int gen = RAND_MAX * param_state_get(&slot->param_states[GEN]) * (decay / dt) * 0.1f;
     for(int i = 0; i < BUCKET_SIZE; i++){
         state->pixels[i] -= decay;
         if(state->pixels[i] < 0)
             state->pixels[i] = 0;
 
-        if(rand() < gen)
-            state->pixels[i] = 1.;
+        if((int)threadrand_1024() < gen)
+            state->pixels[i] = 1.f;
     }
     struct colormap * cm = slot->colormap ? slot->colormap : cm_global;
     state->color = colormap_color(cm, param_state_get(&slot->param_states[COLOR]));

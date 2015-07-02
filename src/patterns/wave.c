@@ -68,12 +68,12 @@ static const parameter_t params[N_PARAMS] = {
 static void init(state_t* state)
 {
     state->color = (color_t) {0.0, 0.0, 0.0, 0.0};
-    freq_init(&state->freq_state, 0.5, 0);
+    freq_init(&state->freq_state, 0.5f, 0);
     state->type = OSC_SINE;
-    state->last_t = 0;
-    state->kx = 1.0;
-    state->ky = 1.0;
-    state->rho = 0.5;
+    state->last_t = 0.f;
+    state->kx = 1.0f;
+    state->ky = 1.0f;
+    state->rho = 0.5f;
 }
 
 static void update(slot_t* slot, mbeat_t t)
@@ -89,11 +89,11 @@ static void update(slot_t* slot, mbeat_t t)
     freq_update(&state->freq_state, t, param_state_get(&slot->param_states[OMEGA]));
     state->last_t = t;
 
-    k_mag = param_state_get(&slot->param_states[K_MAG]) * 2 + 0.2;
-    k_ang = param_state_get(&slot->param_states[K_ANGLE]) * 2 * M_PI;
-    state->kx = COS(k_ang) * k_mag;
-    state->ky = SIN(k_ang) * k_mag;
-    state->rho = exp(param_state_get(&slot->param_states[RHO]) * 2 * logf(0.5 - 0.1)) + 0.1;
+    k_mag = param_state_get(&slot->param_states[K_MAG]) * 2 + 0.2f;
+    k_ang = param_state_get(&slot->param_states[K_ANGLE]) * 2 * (float)M_PI;
+    state->kx = cosf(k_ang) * k_mag;
+    state->ky = sinf(k_ang) * k_mag;
+    state->rho = expf(param_state_get(&slot->param_states[RHO]) * 2 * logf(0.5f - 0.1f)) + 0.1f;
 }
 
 static void command(slot_t* slot, pat_command_t cmd)

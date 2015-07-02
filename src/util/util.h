@@ -111,7 +111,7 @@ static inline uint64_t threadrand_1024(){
   return (s[ p ] = s0 ^ s1 ) * 1181783497276652981LL;
 }
 #ifndef __cplusplus
-static inline uint32_t hash(const char *const data)
+static inline uint32_t mmhash(const char *const data)
 {
   uint32_t out;
   const uint32_t seed = 0;
@@ -121,7 +121,7 @@ static inline uint32_t hash(const char *const data)
 #endif
 #ifdef __cplusplus
 };
-constexpr inline uint32_t hash(const char *const key ) noexcept
+constexpr inline uint32_t mmhash(const char *const key ) noexcept
 {
   return Murmur3_32(key,0);
 }

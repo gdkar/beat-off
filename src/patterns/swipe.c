@@ -128,7 +128,7 @@ static inline color_t render(const state_t* restrict state, float x, float y)
                 a += 0;
         }
     }
-    output.a = MIN(a, 1.0);
+    output.a = MIN(a, 1.0f);
     return output;
 }
 
@@ -168,9 +168,9 @@ static void command(slot_t* slot, pat_command_t cmd)
                 case 2:
                     swipe->ox = -1;
                     swipe->oy = -1;
-                    swipe->kx = .707;
-                    swipe->ky = .707;
-                    swipe->alpha = 1.;
+                    swipe->kx = .707f;
+                    swipe->ky = .707f;
+                    swipe->alpha = 1.f;
                     break;
             }
             break;

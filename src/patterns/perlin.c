@@ -1,6 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
-
+#include "util/util.h"
 #include "core/err.h"
 #include "core/slot.h"
 #include "patterns/pattern.h"
@@ -46,7 +46,7 @@ static void init(state_t* state)
 {
     state->colormap = cm_global;
     state->last_mbeat = 0;
-    state->t = (float)(rand() / (RAND_MAX / 1000));
+    state->t = (float)(threadrand_1024() / (INT64_MAX/ 1000));
     state->zoom = 0;
 }
 
@@ -65,7 +65,7 @@ static void update(slot_t* slot, mbeat_t t)
 
 static inline color_t render(const state_t* restrict state, float x, float y)
 {
-    return colormap_color(state->colormap, perlin3d(x * state->zoom, y * state->zoom, state->t) + 0.5);
+    return colormap_color(state->colormap, perlin3d(x * state->zoom, y * state->zoom, state->t) + 0.5f);
 }
 
 static void command(slot_t* slot, pat_command_t cmd)

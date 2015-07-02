@@ -17,15 +17,15 @@ float osc_fn_gen(enum osc_type type, float phase){
     switch(type){
         case OSC_SINE:
         default:
-            return (COS(phase * 2 * M_PI) + 1.0) / 2.0;
+            return (cosf(phase * 2 * (float)M_PI) + 1.f) *0.5;
         case OSC_TRIANGLE:
-            return ABS(fmod(phase + 16.0, 1.0) - 0.5) * 2;
+            return fabsf(fmodf(phase + 16.f, 1.f) - 0.5f) * 2;
         case OSC_SAWTOOTH_R:
-            return fmod(phase + 16.0, 1.0);
+            return fmodf(phase + 16.f, 1.f);
         case OSC_SAWTOOTH_F:
-            return fmod(-phase + 16.0, 1.0);
+            return fmodf(-phase + 16.f, 1.f);
         case OSC_SQUARE:
-            return (fmod(phase + 16.0 + 0.75, 1.0) > 0.5 ? 1.0 : 0.0);
+            return (fmodf(phase + 16.0f + 0.75f, 1.f) > 0.5f ? 1.f : 0.f);
     }
 }
 

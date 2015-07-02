@@ -15,7 +15,6 @@ double ema_update(struct ema_state * state, mbeat_t t, double in){
     // time should be monotonically increasing!
     if(state->t_1 > t) state->t_1 = t; 
     if(isnan(state->out_1)) state->out_1 = 0.;
-
     double dt = MB2B(t - state->t_1);
     double w, w2;
     if(state->tau > 1e-4){
@@ -26,14 +25,11 @@ double ema_update(struct ema_state * state, mbeat_t t, double in){
         w = 0.;
         w2 = 0.;
     }
-
     state->out_1 = state->out_1 * w + in * (1. - w2) + state->in_1 * (w2 - w);
     state->in_1 = in;
     state->t_1 = t;
-
     return state->out_1;
 }
-
 void dema_init(struct ema_state * state, double tau_rise, double tau_fall){
     state->out_1 = 0.;
     state->in_1 = 0.;
@@ -41,7 +37,6 @@ void dema_init(struct ema_state * state, double tau_rise, double tau_fall){
     state->tau_rise = tau_rise;
     state->tau_fall = tau_fall;
 }
-
 double dema_update(struct ema_state * state, mbeat_t t, double in){
     if(state->t_1 == 0) state->t_1 = t;
     // time should be monotonically increasing!
@@ -49,12 +44,8 @@ double dema_update(struct ema_state * state, mbeat_t t, double in){
     if(isnan(state->out_1)) state->out_1 = 0.;
 
     double tau;
-    if(in > state->out_1){
-        tau = state->tau_rise;
-    }else{
-        tau = state->tau_fall;
-    }
-
+    if(in > state->out_1){tau = state->tau_rise;
+    }else{tau = state->tau_fall;}
     double dt = MB2B(t - state->t_1);
     double w;
     double w2;
@@ -73,9 +64,7 @@ double dema_update(struct ema_state * state, mbeat_t t, double in){
 
     return state->out_1;
 }
-
 // ---- Automatic Gain Control / Compressor ----
-
 void agc_init(struct agc_state * state, double range_high, double range_low, double knee_high, double knee_low, double tau){
 
     // EMA for envelopes
@@ -113,19 +102,15 @@ double agc_update(struct agc_state * state, mbeat_t t, double in){
 // ---- Frequency Doubling ----
 
 static inline double value_to_frequency(int zeroable, double value){
-    if(zeroable)
-        return power_zero_quantize_parameter(value);
-    else
-        return power_quantize_parameter(value);
+    if(zeroable) return power_zero_quantize_parameter(value);
+    else         return power_quantize_parameter(value);
 }
-
 void freq_init(struct freq_state * state, double initial_freq_val, int zeroable){
     state->freq = value_to_frequency(zeroable, initial_freq_val);
     state->phase = 0.;
     state->last_t = 0;
     state->zeroable  = zeroable;
 }
-
 int freq_update(struct freq_state * state, mbeat_t t, double target_freq_val){
     // Returns number of beat boundaries crossed since last update call
     int n_beats = 0;

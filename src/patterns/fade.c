@@ -48,7 +48,7 @@ static void init(state_t* state)
     state->color = (color_t) {0.0, 0.0, 0.0, 0.0};
     state->color_phase = 0.;
     state->last_event_start = 0;
-    freq_init(&state->freq_state, 0.5, 1);
+    freq_init(&state->freq_state, 0.5f, 1);
 }
 
 static void update(slot_t* slot, mbeat_t t)
@@ -58,13 +58,13 @@ static void update(slot_t* slot, mbeat_t t)
 
     if(n_beats && (t - state->last_event_start > 1000)){
         state->color_phase += n_beats * param_state_get(&slot->param_states[DELTA]);
-        state->color_phase = fmod(state->color_phase, 1.0);
+        state->color_phase = fmodf(state->color_phase, 1.0f);
     }
 
     float x = param_state_get(&slot->param_states[COLOR]);
     x += state->color_phase;
     struct colormap * cm = slot->colormap ? slot->colormap : cm_global;
-    state->color = colormap_color(cm, fmod(x, 1.0));
+    state->color = colormap_color(cm, fmodf(x, 1.0f));
 }
 
 static void command(slot_t* slot, pat_command_t cmd)
@@ -76,7 +76,7 @@ static void command(slot_t* slot, pat_command_t cmd)
             state->color_phase += param_state_get(&slot->param_states[DELTA]);
             float x = param_state_get(&slot->param_states[COLOR]) + state->color_phase;
             struct colormap * cm = slot->colormap ? slot->colormap : cm_global;
-            state->color = colormap_color(cm, fmod(x, 1.0));
+            state->color = colormap_color(cm, fmodf(x, 1.0f));
             state->last_event_start = state->freq_state.last_t;
             break;
         case STATUS_CHANGE:

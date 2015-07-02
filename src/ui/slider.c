@@ -7,9 +7,6 @@
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_gfxPrimitives.h>
 
-SDL_Surface* slider_surface;
-SDL_Surface* alpha_slider_surface;
-
 static struct
 {
     param_state_t * state;
@@ -19,27 +16,16 @@ static struct
 
 void slider_init()
 {
-    slider_surface = SDL_CreateRGBSurface(0, layout.slider.w, layout.slider.h, 32, 0, 0, 0, 0);
-    if(!slider_surface) FAIL("SDL_CreateRGBSurface Error: %s\n", SDL_GetError());
-
-    alpha_slider_surface = SDL_CreateRGBSurface(0, layout.alpha_slider.w, layout.alpha_slider.h, 32, 0, 0, 0, 0);
-    if(!slider_surface) FAIL("SDL_CreateRGBSurface Error: %s\n", SDL_GetError());
 }
 
-void slider_del()
-{
-    SDL_FreeSurface(slider_surface);
-}
+void slider_del(){}
 
 void slider_render_alpha(SDL_Surface *onto, rect_t *where, param_state_t* state)
 {
     param_output_t * param_output = param_state_output(state);
     SDL_Color handle_color = {0, 0, 80, 255};
     SDL_Rect r;
-
-    if(param_output){
-        handle_color = param_output->handle_color;
-    }
+    if(param_output){handle_color = param_output->handle_color;}
     fill_background(onto, where, &layout.alpha_slider.background);
     rect_copy(&r, &layout.alpha_slider.track_rect);
     r.x+=where->x;
@@ -54,13 +40,10 @@ void slider_render_alpha(SDL_Surface *onto, rect_t *where, param_state_t* state)
                                                 handle_color.g,
                                                 handle_color.b));
 }
-
-void slider_render(SDL_Surface *onto, rect_t *where,const parameter_t* param, param_state_t* state, SDL_Color c)
-{
+void slider_render(SDL_Surface *onto, rect_t *where,const parameter_t* param, param_state_t* state, SDL_Color c){
     param_output_t * param_output = param_state_output(state);
     SDL_Color handle_color = {0, 0, 80, 255};
     SDL_Color white = {255, 255, 255, 255};
-
     SDL_Rect r;
     fill_background(onto, where, &layout.slider.background);
     r.x+=where->x;
@@ -153,21 +136,16 @@ void slider_render(SDL_Surface *onto, rect_t *where,const parameter_t* param, pa
                                                     handle_color.b));
     }
 }
-
 void mouse_drag_alpha_slider(){
-    float val = active_slider.initial_value -
-                (float)mouse_drag_delta.y / (layout.alpha_slider.track_h - layout.alpha_slider.handle_h);
+    float val = active_slider.initial_value - (float)mouse_drag_delta.y / (layout.alpha_slider.track_h - layout.alpha_slider.handle_h);
     if(val < 0) val = 0;
     else if(val > 1) val = 1;
     param_state_setq(active_slider.state, val);
 }
 void mouse_drag_param_slider(){
-    float val = active_slider.initial_value +
-                (float)mouse_drag_delta.x / (layout.slider.track_w - layout.slider.handle_w);
-
+    float val = active_slider.initial_value + (float)mouse_drag_delta.x / (layout.slider.track_w - layout.slider.handle_w);
     if(val < 0) val = 0;
     else if(val > 1) val = 1;
-
     *active_slider.value_p = val;
 }
 
@@ -238,7 +216,6 @@ int mouse_down_param_slider(param_state_t * param_state, struct xy xy){
             break;
         }
     }
-
     // The rect containing the area above the slider
     r.x = 0;
     r.y = 0;
@@ -255,7 +232,6 @@ int mouse_down_param_slider(param_state_t * param_state, struct xy xy){
             return HANDLED;
         }
     }
-
     // The rect containing the area below the slider
     r.x = 0;
     r.y = layout.slider.handle_y + layout.slider.handle_h;

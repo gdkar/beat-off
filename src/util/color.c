@@ -1,7 +1,7 @@
 #include <math.h>
 
 #include <SDL/SDL.h>
-
+#include "util/sse_mathfun.h"
 #include "util/color.h"
 #include "util/math.h"
 
@@ -52,12 +52,10 @@ static float mono_value = 0;
 
 color_t colormap_color(struct colormap * cm, float value){
     //if(colormap_test(cm)) return (color_t) {0,0,0,1};
-    if(cm->state == COLORMAP_STATE_UNINITIALIZED)
-        colormap_init(cm);
-    if(cm->state != COLORMAP_STATE_SAMPLED)
-        return (color_t) {0,0,0, 1.0};
+    if(cm->state == COLORMAP_STATE_UNINITIALIZED)colormap_init(cm);
+    if(cm->state != COLORMAP_STATE_SAMPLED)return (color_t) {0,0,0, 1.0f};
 
-    value = MIN(MAX(value, 0.), 1.);
+    value = fminf(fmaxf(value, 0.), 1.f);
     value *= (COLORMAP_RESOLUTION - 1);
     int idx = (int) value;
 #ifdef COLORMAP_EXACT
@@ -67,9 +65,9 @@ color_t colormap_color(struct colormap * cm, float value){
         return left;
     color_t right = cm->samples[idx+1];
     color_t out;
-    out.r = right.r * alpha + left.r * (1.0 - alpha);
-    out.g = right.g * alpha + left.g * (1.0 - alpha);
-    out.b = right.b * alpha + left.b * (1.0 - alpha);
+    out.r = right.r * alpha + left.r * (1.0f - alpha);
+    out.g = right.g * alpha + left.g * (1.0f - alpha);
+    out.b = right.b * alpha + left.b * (1.0f - alpha);
     out.a = 1;
     return out;
 #else 
@@ -122,21 +120,18 @@ int colormap_init(struct colormap * cm){
     }
 
     for(size_t i = 0; i < COLORMAP_RESOLUTION; i++){
-        float value = (float) i / (COLORMAP_RESOLUTION - 1.);
+        float value = (float) i *(1.f/ (COLORMAP_RESOLUTION - 1.f));
         struct colormap_el * left = cm->points;
         struct colormap_el * right = left+1;
-
         while(right->x < value){
             left++;
             right++;
         }
-
-        float t = powf((value - left->x) / (right->x - left->x), left->gamma);
-
+        float t = powf(_mm_mul_ss(_mm_set_ss(value-left->x),_mm_rcp_ss(_mm_set_ss(right->x-left->x)))[0],(left->gamma));//powf((value - left->x) / (right->x - left->x), left->gamma);
         color_t out;
-        out.r = right->y.r * t + left->y.r * (1.0 - t);
-        out.g = right->y.g * t + left->y.g * (1.0 - t);
-        out.b = right->y.b * t + left->y.b * (1.0 - t);
+        out.r = right->y.r * t + left->y.r * (1.0f - t);
+        out.g = right->y.g * t + left->y.g * (1.0f - t);
+        out.b = right->y.b * t + left->y.b * (1.0f - t);
         //out.a = right->y.a * t + left->y.a * (1.0 - t);
         out.a = 1;
         cm->samples[i] = out;
@@ -144,16 +139,13 @@ int colormap_init(struct colormap * cm){
     cm->state = COLORMAP_STATE_SAMPLED;
     return 0;
 }
-
 void colormap_set_global(struct colormap * cm){
     cm_global = cm;
     colormap_set_mono(mono_value);
 }
-
 void colormap_set_mono(float value){
     mono_value = value;
     s_cm_global_mono.points[1].y = colormap_color(cm_global, mono_value);
     s_cm_global_mono.state = COLORMAP_STATE_UNINITIALIZED;
     colormap_init(&s_cm_global_mono);
-
 }

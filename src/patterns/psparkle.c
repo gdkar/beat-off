@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "util/util.h"
 #include "core/err.h"
 #include "core/slot.h"
 #include "patterns/pattern.h"
@@ -56,7 +57,7 @@ static void init(state_t* state)
 {
     state->c = (color_t){1, 0, 0, 0};
     state->last_mbeat = 0;
-    state->t = (float)(rand() / (RAND_MAX / 1000));
+    state->t = (float)(threadrand_1024() / (INT64_MAX/ 1000));
     state->zoom = 0;
 
     state->density = 0;
@@ -69,12 +70,11 @@ static void update(slot_t* slot, mbeat_t t)
 
     float v = param_state_get(&slot->param_states[SPEED]) * 4;
     state->zoom = (1 - param_state_get(&slot->param_states[ZOOM])) * 6;
-
-    state->density = (1 - param_state_get(&slot->param_states[DENSITY])) * 0.5;
+    state->density = (1 - param_state_get(&slot->param_states[DENSITY])) * 0.5f;
     state->hardness = param_state_get(&slot->param_states[HARDNESS]) * 5;
     state->hardness *= state->hardness;
 
-    state->t = fmod(state->t + (float)(t - state->last_mbeat) / 1000 * v, PERLIN_PERIOD);
+    state->t = fmodf(state->t + (float)(t - state->last_mbeat) / 1000 * v, PERLIN_PERIOD);
     state->last_mbeat = t;
 
     //state->colormap = slot->colormap ? slot->colormap : cm_global;
@@ -83,7 +83,7 @@ static void update(slot_t* slot, mbeat_t t)
 static inline color_t render(const state_t* restrict state, float x, float y)
 {
     color_t c = state->c;
-    c.a = state->hardness * (perlin3d(x * state->zoom, y * state->zoom, state->t) - state->density) + 0.5;
+    c.a = state->hardness * (perlin3d(x * state->zoom, y * state->zoom, state->t) - state->density) + 0.5f;
     if(c.a > 1) c.a = 1;
     if(c.a < 0) c.a = 0;
     return c;

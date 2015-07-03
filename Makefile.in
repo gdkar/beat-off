@@ -62,7 +62,7 @@ LIB  = -L/usr/local/lib -L/usr/lib @LIBS@ -lGLEW -lglfw
 
 # Assembler, compiler, and linker flags
 OPTFLAGS +=  -Ofast -mrecip=all -fassociative-math -ffast-math 
-OPTFLAGS += -Wall -Wextra -Wformat=2 -Wno-format-nonliteral -Wshadow -Wpointer-arith -Wcast-qual -Wno-missing-braces -Wno-unused-parameter -Wuninitialized -Werror -Wno-array-bounds  -march=native -g -ggdb
+OPTFLAGS += -Wall -Wextra -Wformat=2 -Wno-cast-qual -Wno-format-nonliteral -Wshadow -Wpointer-arith -Wno-missing-braces -Wno-unused-parameter -Wuninitialized -Werror -Wno-array-bounds  -march=native -g -ggdb
 #OPTFLAGS += -funsafe-loop-optimizations -Wunsafe-loop-optimizations -ffast-math 
 OPTFLAGS += -DTEXT_ANTIALIAS -DGRAPH_ANTIALIAS -D_BSD_SOURCE -D_GNU_SOURCE -DPOSIX_C_SOURCE=200112
 CFLAGS = @CFLAGS@ @CPPFLAGS@ $(INC) -std=gnu11 -D_POSIX_C_SOURCE $(OPTFLAGS)

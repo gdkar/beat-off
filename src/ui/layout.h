@@ -15,7 +15,8 @@
 #include "ui/layout_constants.h"
 #include "util/string.h"
 #include "util/color.h"
-
+#include <json-c/json.h>
+#include <json-c/linkhash.h>
 #ifdef CFGOBJ
 #undef CFGOBJ
 #undef CFGOBJ_PATH
@@ -30,13 +31,11 @@ struct image {
     SDL_Surface * surface;
     int error;
 };
-
 static inline struct image _parse_image(const char * str){
     struct image image = {0, 0, 0};
     image.filename = strdup(str);
     return image;
 }
-
 #define IMAGE struct image
 #define IMAGE_PARSE(x) _parse_image(x)
 #define IMAGE_FORMAT(x) "%s", x.filename
@@ -48,32 +47,28 @@ static inline struct image _parse_image(const char * str){
 struct xy {
     CFG_XY_ATTR(,,)
 };
-
 #define CFG_TXT_ATTR(n, dx, dy, dsize, dalign, dfont, dcolor) \
     CFG_XY_ATTR(n, dx, dy) \
     CFG(PREFIX(n, size), INT, dsize) \
     CFG(PREFIX(n, align), INT, dalign) \
     CFG(PREFIX(n, font), STRING, dfont) \
     CFG(PREFIX(n, color), COLOR, dcolor)
-
 struct txt;
 struct txt {
     CFG_TXT_ATTR(,,,,,,)
+    lh_table  *cache;
     struct {
         TTF_Font * font;
         struct txt * next;
     } ui_font;
 };
-
 #define CFG_RECT_ATTR(n, dx, dy, dw, dh) \
     CFG(PREFIX(n, x), SINT16, dx) \
     CFG(PREFIX(n, y), SINT16, dy) \
     CFG(PREFIX(n, w), UINT16, dw) \
     CFG(PREFIX(n, h), UINT16, dh) 
 
-
 typedef SDL_Rect rect_t;
-
 #define CFG_RECT_ARRAY_ATTR(n, dx, dy, dw, dh, dpx, dpy, dtile) \
     CFG(PREFIX(n, x), SINT16, dx) \
     CFG(PREFIX(n, y), SINT16, dy) \
@@ -82,21 +77,16 @@ typedef SDL_Rect rect_t;
     CFG(PREFIX(n, px), UINT16, dpx) \
     CFG(PREFIX(n, py), UINT16, dpy) \
     CFG(PREFIX(n, tile), INT, dtile)
-
 struct rect_array {
     CFG_RECT_ARRAY_ATTR(,,,,,,,)
 };
-
 #define CFG_BACKGROUND_ATTR(n, dcolor, dfilename) \
     CFG(PREFIX(n, color), COLOR, dcolor) \
     CFG(PREFIX(n, image), IMAGE, dfilename)
-
 struct background {
     CFG_BACKGROUND_ATTR(,,)
 };
-
 #undef CFG
-
 #define CFG_XY(n, args...) union { struct xy PREFIX(n, xy); struct { CFG_XY_ATTR(n, args) }; };
 #define CFG_TXT(n, args...) union { struct txt PREFIX(n, txt); struct { CFG_TXT_ATTR(n, args) }; };
 #define CFG_RECT(n, args...) union { rect_t PREFIX(n, rect); struct { CFG_RECT_ATTR(n, args) }; };
@@ -130,7 +120,12 @@ static inline void rect_shift(rect_t * rect, const struct xy * d){
     rect->x += d->x;
     rect->y += d->y;
 }
-
+static inline void rect_relative(const rect_t *box, const rect_t *world, rect_t *dst){
+  dst->w = box->w;
+  dst->h = box->h;
+  dst->x = box->x+world->x;
+  dst->y = box->y+world->y;
+}
 // Creates a copy of a `rect` at the origin 
 static inline void rect_origin(const rect_t * src, rect_t * dst){
     dst->x = 0;

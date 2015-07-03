@@ -631,6 +631,8 @@ SDL_CFLAGS
 SDL_ENABLED
 FFTWF_LIBS
 FFTWF_CFLAGS
+JSONC_LIBS
+JSONC_CFLAGS
 SRC_LIBS
 SRC_CFLAGS
 GLFW_LIBS
@@ -720,6 +722,8 @@ GLFW_CFLAGS
 GLFW_LIBS
 SRC_CFLAGS
 SRC_LIBS
+JSONC_CFLAGS
+JSONC_LIBS
 FFTWF_CFLAGS
 FFTWF_LIBS
 SDL_CFLAGS
@@ -1364,6 +1368,9 @@ Some influential environment variables:
   GLFW_LIBS   linker flags for GLFW, overriding pkg-config
   SRC_CFLAGS  C compiler flags for SRC, overriding pkg-config
   SRC_LIBS    linker flags for SRC, overriding pkg-config
+  JSONC_CFLAGS
+              C compiler flags for JSONC, overriding pkg-config
+  JSONC_LIBS  linker flags for JSONC, overriding pkg-config
   FFTWF_CFLAGS
               C compiler flags for FFTWF, overriding pkg-config
   FFTWF_LIBS  linker flags for FFTWF, overriding pkg-config
@@ -4478,6 +4485,102 @@ $as_echo "yes" >&6; }
   LIBS="$LIBS $SRC_LIBS"
 
 fi
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for JSONC" >&5
+$as_echo_n "checking for JSONC... " >&6; }
+
+if test -n "$JSONC_CFLAGS"; then
+    pkg_cv_JSONC_CFLAGS="$JSONC_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"json-c\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "json-c") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_JSONC_CFLAGS=`$PKG_CONFIG --cflags "json-c" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$JSONC_LIBS"; then
+    pkg_cv_JSONC_LIBS="$JSONC_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"json-c\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "json-c") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_JSONC_LIBS=`$PKG_CONFIG --libs "json-c" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        JSONC_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "json-c" 2>&1`
+        else
+	        JSONC_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "json-c" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$JSONC_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (json-c) were not met:
+
+$JSONC_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables JSONC_CFLAGS
+and JSONC_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables JSONC_CFLAGS
+and JSONC_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	JSONC_CFLAGS=$pkg_cv_JSONC_CFLAGS
+	JSONC_LIBS=$pkg_cv_JSONC_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+  CPPFLAGS="$CPPFLAGS $JSONC_CFLAGS"
+  LIBS="$LIBS $JSONC_LIBS"
+
+fi
+
 
 
 pkg_failed=no

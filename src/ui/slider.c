@@ -22,18 +22,11 @@ void slider_render_alpha(SDL_Surface *onto, rect_t *where, param_state_t* state)
     SDL_Rect r;
     if(param_output){handle_color = param_output->handle_color;}
     fill_background(onto, where, &layout.alpha_slider.background);
-    rect_copy(&r, &layout.alpha_slider.track_rect);
-    r.x+=where->x;
-    r.y+=where->y;
+    rect_relative(&layout.alpha_slider.track_rect,where,&r);
     SDL_FillRect(onto, &r, map_sdl_color(onto, layout.alpha_slider.track_color));
-    rect_copy(&r, &layout.alpha_slider.handle_rect);
-    r.x+=where->x;
-    r.y+=where->y;
+    rect_relative( &layout.alpha_slider.handle_rect,where,&r);
     r.y += (1.0 - param_state_get(state)) * (layout.alpha_slider.track_h - layout.alpha_slider.handle_h);
-    SDL_FillRect(onto, &r, SDL_MapRGB(onto->format,
-                                                handle_color.r,
-                                                handle_color.g,
-                                                handle_color.b));
+    SDL_FillRect(onto, &r, SDL_MapRGB(onto->format,handle_color.r,handle_color.g,handle_color.b));
 }
 void slider_render(SDL_Surface *onto, rect_t *where,const parameter_t* param, param_state_t* state, SDL_Color c){
     param_output_t * param_output = param_state_output(state);
@@ -41,35 +34,27 @@ void slider_render(SDL_Surface *onto, rect_t *where,const parameter_t* param, pa
     SDL_Color white = {255, 255, 255, 255};
     SDL_Rect r;
     fill_background(onto, where, &layout.slider.background);
-    r.x+=where->x;
-    r.y+=where->y;
     text_render(onto,where, &layout.slider.name_txt, &c, param->name);
     if(param->val_to_str){
         char sbuf[129];
         param->val_to_str(param_state_get(state), sbuf, 128);
         text_render(onto, where,&layout.slider.value_txt, &white, sbuf);
     }
-    rect_copy(&r,&layout.slider.track_rect);
-    r.x+=where->x;
-    r.y+=where->y;
+    rect_relative(&layout.slider.track_rect,where,&r);
     SDL_FillRect(onto, &r, map_sdl_color(onto, layout.slider.track_color));
     if(param_output){
         handle_color = param_output->handle_color;
         text_render(onto, where, &layout.slider.source_txt, &param_output->label_color, param_output->label);
         switch(state->mode){
             case PARAM_VALUE_SCALED:
-                rect_copy(&r, &layout.slider.handle_rect);
-                r.x += where->x;
-                r.y += where->y;
+                rect_relative( &layout.slider.handle_rect,where,&r);
                 r.x += state->min * (layout.slider.track_w - layout.slider.handle_w);
                 filledTrigonRGBA(onto, r.x + r.w, r.y, r.x, r.y + r.h / 2, r.x + r.w, r.y + r.h,
                                                             handle_color.r,
                                                             handle_color.g,
                                                             handle_color.b,
                                                             255);
-                rect_copy(&r, &layout.slider.handle_rect);
-                r.x += where->x;
-                r.y += where->y;
+                rect_relative(&layout.slider.handle_rect,where,&r);
                 r.x += state->max * (layout.slider.track_w - layout.slider.handle_w);
                 filledTrigonRGBA(onto, r.x, r.y, r.x + r.w, r.y + r.h / 2, r.x, r.y + r.h,
                                                             handle_color.r,
@@ -77,42 +62,32 @@ void slider_render(SDL_Surface *onto, rect_t *where,const parameter_t* param, pa
                                                             handle_color.b,
                                                             255);
 
-                rect_copy(&r, &layout.slider.output_indicator_rect);
-                r.x += where->x;
-                r.y += where->y;
+                rect_relative( &layout.slider.output_indicator_rect,where,&r);
                 r.x += param_state_get(state) * (layout.slider.track_w - layout.slider.output_indicator_w);
                 SDL_FillRect(onto, &r, SDL_MapRGB(onto->format, 255, 255, 255));
             break;
             case PARAM_VALUE_EXPANDED:
-                rect_copy(&r, &layout.slider.handle_rect);
-                r.x+=where->x;
-                r.y+=where->y;
+                rect_relative(&layout.slider.handle_rect,where,&r);
                 r.x += state->min * (layout.slider.track_w - layout.slider.handle_w);
                 trigonRGBA(onto, r.x + r.w, r.y, r.x, r.y + r.h / 2, r.x + r.w, r.y + r.h,
                                                             handle_color.r,
                                                             handle_color.g,
                                                             handle_color.b,
                                                             255);
-                rect_copy(&r, &layout.slider.handle_rect);
-                r.x+=where->x;
-                r.y+=where->y;
+                rect_relative(&layout.slider.handle_rect,where,&r);
                 r.x += state->max * (layout.slider.track_w - layout.slider.handle_w);
                 trigonRGBA(onto, r.x, r.y, r.x + r.w, r.y + r.h / 2, r.x, r.y + r.h,
                                                             handle_color.r,
                                                             handle_color.g,
                                                             handle_color.b,
                                                             255);
-                rect_copy(&r, &layout.slider.output_indicator_rect);
-                r.x+=where->x;
-                r.y+=where->y;
+                rect_relative(&layout.slider.output_indicator_rect,where,&r);
                 r.x += param_state_get(state) * (layout.slider.track_w - layout.slider.output_indicator_w);
                 SDL_FillRect(onto, &r, SDL_MapRGB(onto->format, 250, 30, 20));
             break;
             default:
             case PARAM_VALUE_DIRECT:
-                rect_copy(&r, &layout.slider.handle_rect);
-                r.x+=where->x;
-                r.y+=where->y;
+                rect_relative(&layout.slider.handle_rect,where,&r);
                 r.x += param_state_get(state) * (layout.slider.track_w - layout.slider.handle_w);
                 SDL_FillRect(onto, &r, SDL_MapRGB(onto->format,
                                                             handle_color.r,
@@ -121,9 +96,7 @@ void slider_render(SDL_Surface *onto, rect_t *where,const parameter_t* param, pa
             break;
         }
     }else{
-        rect_copy(&r, &layout.slider.handle_rect);
-        r.x+=where->x;
-        r.y+=where->y;
+        rect_relative( &layout.slider.handle_rect,where,&r);
         r.x += param_state_get(state) * (layout.slider.track_w - layout.slider.handle_w);
         SDL_FillRect(onto, &r, SDL_MapRGB(onto->format,
                                                     handle_color.r,
@@ -143,11 +116,9 @@ void mouse_drag_param_slider(){
     else if(val > 1) val = 1;
     *active_slider.value_p = val;
 }
-
 int mouse_down_alpha_slider(param_state_t * param_state, struct xy xy){
     rect_t r;
     struct xy offset;
-
     rect_copy(&r, &layout.alpha_slider.handle_rect);
     r.y += (1.0 - param_state_get(param_state)) * (layout.alpha_slider.track_h - layout.alpha_slider.handle_h);
     if(xy_in_rect(&xy, &r, &offset)){
@@ -158,11 +129,9 @@ int mouse_down_alpha_slider(param_state_t * param_state, struct xy xy){
     }
     return UNHANDLED;
 }
-
 int mouse_down_param_slider(param_state_t * param_state, struct xy xy){
     rect_t r;
     struct xy offset;
-
     if(!param_state->connected_output){
         rect_copy(&r, &layout.slider.handle_rect);
         r.x += param_state_get(param_state) * (layout.slider.track_w - layout.slider.handle_w);

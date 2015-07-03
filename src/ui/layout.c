@@ -19,27 +19,23 @@ void rect_array_layout(struct rect_array * array_spec, int i, rect_t * rect){
         index_y = i % (-array_spec->tile);
         index_x = i / (-array_spec->tile);
     }
-
     rect->x = array_spec->x + array_spec->px * index_x;
     rect->y = array_spec->y + array_spec->py * index_y;
     rect->w = array_spec->w;
     rect->h = array_spec->h;
 }
-
 void rect_array_origin(struct rect_array * array_spec, rect_t * rect){
     rect->x = 0;
     rect->y = 0;
     rect->w = array_spec->w;
     rect->h = array_spec->h;
 }
-
 // BMP images are lazily loaded. Try to load one 
 SDL_Surface * image_load(struct image * image){
     if(image->error) return NULL; 
     if(!image->surface){
         char * full_path = strcatdup(config.path.images, image->filename);
         if(!full_path) return NULL;
-
         SDL_Surface * tmp_surf = IMG_Load(full_path);
         if(!tmp_surf) {
             ERROR("IMG_Load: %s\n", SDL_GetError());
@@ -57,7 +53,6 @@ SDL_Surface * image_load(struct image * image){
     }
     return image->surface;
 }
-
 // Draws a background image onto a SDL_Surface, defaulting to a solid color if an image isn't found
 void fill_background(SDL_Surface * surface, rect_t * rect, struct background * bg){
     SDL_Surface * image_surface = image_load(&bg->image);

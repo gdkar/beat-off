@@ -25,16 +25,8 @@
 
 #include "util/perlin.h"
 
-static void ui_done_callback()
-{
-    output_stop();
-}
-
-void catch_sigterm(int sig)
-{
-    output_stop();
-}
-
+static void ui_done_callback(){output_stop();}
+void catch_sigterm(int sig){output_stop();}
 int main()
 {
     perlin_init();
@@ -46,16 +38,12 @@ int main()
     layout_init(&layout);
     layout_load(&layout, config.path.layout);
     layout_dump(&layout, config.path.layout);
-
     colormap_test_all();
     colormap_set_global(&cm_rainbow_edged);
     colormap_set_mono(0.5);
-
     slots_init();
     pattern_init();
     patterns_updating = SDL_CreateMutex();
-
-    
     /*
      * fade > 100fps
      * full > 100fps

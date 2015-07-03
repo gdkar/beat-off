@@ -46,6 +46,12 @@ PKG_CHECK_MODULES([SRC],[samplerate],[
   LIBS="$LIBS $SRC_LIBS"
 ],[AC_MSG_ERROR(["unable to find the src_simple() function (libresample)"])])
 
+PKG_CHECK_MODULES([JSONC],[json-c],[
+  CPPFLAGS="$CPPFLAGS $JSONC_CFLAGS"
+  LIBS="$LIBS $JSONC_LIBS"
+  ],)
+
+
 PKG_CHECK_MODULES([FFTWF],[fftw3f],[
   CPPFLAGS="$CPPFLAGS $FFTWF_CFLAGS"
   LIBS="$LIBS $FFTWF_LIBS"
